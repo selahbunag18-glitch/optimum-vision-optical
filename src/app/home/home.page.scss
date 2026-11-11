@@ -1,27 +1,782 @@
-#container {
-  text-align: center;
 
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
+:host {
+  --dashboard-primary: #008f9c;
+  --dashboard-dark: #102b46;
+  --dashboard-muted: #64748b;
+  --dashboard-border: #dfe8ef;
 }
 
-#container strong {
-  font-size: 20px;
-  line-height: 26px;
+/* =====================================
+   SHARED DASHBOARD TOOLBAR
+===================================== */
+
+.dashboard-toolbar {
+  --background: #ffffff;
+  --color: #102b46;
+  --min-height: 68px;
+  --padding-start: 12px;
+  --padding-end: 18px;
+
+  border-bottom: 1px solid #dfe8ef;
 }
 
-#container p {
-  font-size: 16px;
-  line-height: 22px;
+/* Header controls: desktop shows Logout, mobile shows menu. */
+.dashboard-toolbar .dashboard-menu-button {
+  display: none !important;
+  --color: #008f9c;
+  --background: #e7f5f5;
+  --border-radius: 9px;
+  font-size: 23px;
+  width: 44px;
+  height: 42px;
+  margin: 0 8px 0 4px;
+  flex-shrink: 0;
+}
 
-  color: #8c8c8c;
+.dashboard-toolbar .desktop-logout-button {
+  display: inline-flex !important;
+  --color: #102b46;
+  flex-shrink: 0;
+}
 
+.dashboard-toolbar ion-title {
+  padding-inline: 8px;
+}
+
+.brand-name {
+  display: block;
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: #102b46;
+}
+
+.brand-subtitle {
+  display: block;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: #64748b;
+  margin-top: 3px;
+}
+
+/* =====================================
+   SHARED CONTENT AND LAYOUT
+===================================== */
+
+.dashboard-content {
+  --background: #f2f6fa;
+}
+
+.dashboard-layout {
+  max-width: 1250px;
+  margin: 0 auto;
+  padding: 32px 24px 70px;
+}
+
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 65vh;
+  gap: 15px;
+  color: #64748b;
+}
+
+.loading-state ion-spinner {
+  width: 36px;
+  height: 36px;
+  color: #008f9c;
+}
+
+/* =====================================
+   WELCOME SECTION
+===================================== */
+
+.welcome-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+
+  padding: 32px;
+  border-radius: 18px;
+
+  background: linear-gradient(
+    120deg,
+    #102b46 0%,
+    #008f9c 100%
+  );
+
+  color: #ffffff;
+  margin-bottom: 24px;
+}
+
+.eyebrow {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  color: #b7eeee;
+  margin: 0 0 12px;
+}
+
+.welcome-section h1 {
+  font-size: 30px;
+  font-weight: 800;
   margin: 0;
+  line-height: 1.3;
+  color: #ffffff;
 }
 
-#container a {
+.welcome-text {
+  margin: 14px 0 0;
+  font-size: 16px;
+  color: #ffffff;
+}
+
+.welcome-description {
+  margin: 8px 0 0;
+  color: #e0f2f1;
+  font-size: 13px;
+}
+
+.welcome-date {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 12px 16px;
+
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.14);
+
+  font-size: 13px;
+  white-space: nowrap;
+  color: #ffffff;
+}
+
+.welcome-date ion-icon {
+  font-size: 19px;
+}
+
+/* =====================================
+   USER SUMMARY
+===================================== */
+
+.user-summary {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+
+  padding: 22px 26px;
+
+  background: #ffffff;
+  border: 1px solid #dfe8ef;
+  border-radius: 15px;
+
+  margin-bottom: 36px;
+}
+
+.user-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 54px;
+  height: 54px;
+  flex-shrink: 0;
+
+  border-radius: 13px;
+  background: #e7f5f5;
+  color: #008f9c;
+}
+
+.user-avatar ion-icon {
+  font-size: 32px;
+}
+
+.user-summary h2 {
+  margin: 0;
+  color: #102b46;
+  font-size: 17px;
+  font-weight: 750;
+}
+
+.user-summary p {
+  margin: 6px 0 0;
+  color: #64748b;
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+
+.role-badge {
+  margin-left: auto;
+
+  background: #e7f5f5;
+  color: #008f9c;
+
+  padding: 9px 14px;
+  border-radius: 999px;
+
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* =====================================
+   DASHBOARD SECTIONS
+===================================== */
+
+.dashboard-section {
+  margin-bottom: 36px;
+}
+
+.section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.section-heading h2 {
+  margin: 0;
+  font-size: 21px;
+  font-weight: 800;
+  color: #102b46;
+}
+
+.section-heading p {
+  margin: 7px 0 0;
+  color: #64748b;
+  font-size: 13px;
+}
+
+/* =====================================
+   OWNER / STAFF QUICK ACTIONS
+===================================== */
+
+.quick-actions {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 15px;
+}
+
+.quick-action {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+
+  padding: 19px;
+
+  border: 1px solid #dfe8ef;
+  border-radius: 13px;
+
+  background: #ffffff;
+  color: #102b46;
+
   text-decoration: none;
+  font-size: 14px;
+  font-weight: 700;
+
+  transition: 0.2s ease;
+}
+
+.quick-action ion-icon {
+  color: #008f9c;
+  font-size: 25px;
+  flex-shrink: 0;
+}
+
+.quick-action:hover {
+  transform: translateY(-3px);
+  border-color: #008f9c;
+
+  box-shadow:
+    0 8px 22px rgba(0, 143, 156, 0.08);
+}
+
+/* =====================================
+   SHARED MODULE CARDS
+===================================== */
+
+.modules-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.module-card {
+  display: flex;
+  flex-direction: column;
+
+  min-height: 215px;
+  padding: 24px;
+
+  border: 1px solid #dfe8ef;
+  border-radius: 15px;
+
+  background: #ffffff;
+  text-decoration: none;
+
+  transition: 0.2s ease;
+}
+
+a.module-card:hover {
+  transform: translateY(-4px);
+  border-color: #008f9c;
+
+  box-shadow:
+    0 12px 28px rgba(0, 143, 156, 0.09);
+}
+
+.module-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 51px;
+  height: 51px;
+
+  border-radius: 12px;
+  background: #e7f5f5;
+  color: #008f9c;
+
+  margin-bottom: 18px;
+}
+
+.module-icon ion-icon {
+  font-size: 26px;
+}
+
+.module-information {
+  flex: 1;
+}
+
+.module-information h3 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 750;
+  color: #102b46;
+}
+
+.module-information p {
+  margin: 9px 0 15px;
+
+  font-size: 13px;
+  line-height: 1.6;
+  color: #64748b;
+}
+
+.module-link {
+  font-size: 12px;
+  font-weight: 800;
+  color: #008f9c;
+}
+
+/* =====================================
+   OWNER / STAFF ADDITIONAL MANAGEMENT
+===================================== */
+
+.additional-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.additional-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+
+  padding: 22px;
+
+  background: #ffffff;
+  border: 1px solid #dfe8ef;
+  border-radius: 14px;
+
+  text-decoration: none;
+  transition: 0.2s ease;
+}
+
+.additional-card:hover {
+  border-color: #008f9c;
+  transform: translateY(-2px);
+}
+
+.additional-card ion-icon {
+  font-size: 27px;
+  color: #008f9c;
+  flex-shrink: 0;
+}
+
+.additional-card h3 {
+  margin: 0;
+  color: #102b46;
+  font-size: 15px;
+  font-weight: 750;
+}
+
+.additional-card p {
+  margin: 8px 0 0;
+  color: #64748b;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+/* =====================================
+   PATIENT WELCOME
+===================================== */
+
+.patient-welcome {
+  position: relative;
+  overflow: hidden;
+  min-height: 230px;
+}
+
+.patient-welcome > div:first-child {
+  position: relative;
+  z-index: 1;
+  max-width: 680px;
+}
+
+.patient-welcome .welcome-description {
+  max-width: 510px;
+  margin-top: 15px;
+  line-height: 1.8;
+}
+
+.patient-welcome-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 160px;
+  height: 160px;
+
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+
+  background: rgba(255, 255, 255, 0.08);
+  flex-shrink: 0;
+}
+
+.patient-welcome-icon ion-icon {
+  font-size: 100px;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.patient-book-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+
+  margin-top: 23px;
+  padding: 13px 20px;
+
+  border-radius: 10px;
+  background: #ffffff;
+  color: #102b46;
+
+  font-size: 13px;
+  font-weight: 800;
+  text-decoration: none;
+
+  transition: 0.2s ease;
+}
+
+.patient-book-button:hover {
+  background: #e7f5f5;
+  transform: translateY(-2px);
+}
+
+.patient-book-button ion-icon {
+  font-size: 18px;
+}
+
+/* =====================================
+   PATIENT SERVICE CARDS
+===================================== */
+
+.patient-modules-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 17px;
+}
+
+.patient-module-card {
+  min-height: 245px;
+}
+
+.patient-module-card.coming-soon {
+  opacity: 0.8;
+  cursor: default;
+}
+
+.patient-module-card.coming-soon:hover {
+  transform: none;
+  border-color: #dfe8ef;
+  box-shadow: none;
+}
+
+/* =====================================
+   PATIENT EYE CARE INFORMATION
+===================================== */
+
+.patient-info-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+
+  padding: 25px;
+
+  border: 1px solid #bfe4e4;
+  border-radius: 15px;
+  background: #e7f5f5;
+}
+
+.patient-info-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 44px;
+  height: 44px;
+
+  border-radius: 12px;
+  background: #ffffff;
+  color: #008f9c;
+
+  flex-shrink: 0;
+}
+
+.patient-info-icon ion-icon {
+  font-size: 25px;
+}
+
+.patient-info-card h3 {
+  margin: 0 0 9px;
+  color: #102b46;
+  font-size: 16px;
+  font-weight: 750;
+}
+
+.patient-info-card p {
+  margin: 0;
+  color: #456477;
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+/* =====================================
+   PATIENT PROFILE
+===================================== */
+
+.patient-profile-card {
+  padding: 8px 25px;
+
+  border: 1px solid #dfe8ef;
+  border-radius: 15px;
+  background: #ffffff;
+}
+
+.profile-row {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 20px 0;
+}
+
+.profile-row + .profile-row {
+  border-top: 1px solid #e9eff4;
+}
+
+.profile-row > ion-icon {
+  font-size: 24px;
+  color: #008f9c;
+  flex-shrink: 0;
+}
+
+.profile-row div {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.profile-row span {
+  font-size: 12px;
+  color: #64748b;
+}
+
+.profile-row strong {
+  color: #102b46;
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+
+/* =====================================
+   FOOTER
+===================================== */
+
+.dashboard-footer {
+  text-align: center;
+  padding: 25px 0;
+
+  border-top: 1px solid #dfe8ef;
+
+  color: #94a3b8;
+  font-size: 12px;
+}
+
+/* =====================================
+   IONIC BUTTON
+===================================== */
+
+ion-button {
+  --border-radius: 9px;
+  text-transform: none;
+  font-weight: 650;
+}
+
+/* =====================================
+   TABLET / PHONE HEADER NAVIGATION
+   Owner/Staff: hamburger only.
+   Patient: keep Logout (no management menu).
+===================================== */
+
+@media (max-width: 1024px) {
+  .dashboard-toolbar .dashboard-menu-button {
+    display: inline-flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+
+  .dashboard-toolbar .desktop-logout-button {
+    display: none !important;
+  }
+
+  /* For Patient accounts the Logout button is the only button. */
+  .dashboard-toolbar .desktop-logout-button:only-child {
+    display: inline-flex !important;
+  }
+}
+
+/* =====================================
+   RESPONSIVE TABLET
+===================================== */
+
+@media (max-width: 1100px) {
+  .patient-modules-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 1000px) {
+  .modules-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .quick-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .additional-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* =====================================
+   RESPONSIVE MOBILE
+===================================== */
+
+@media (max-width: 650px) {
+  .dashboard-layout {
+    padding: 18px 14px 50px;
+  }
+
+  .dashboard-toolbar {
+    --padding-start: 5px;
+    --padding-end: 5px;
+  }
+
+  .brand-name {
+    font-size: 14px;
+  }
+
+  .brand-subtitle {
+    font-size: 9px;
+  }
+
+  .welcome-section {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 25px 20px;
+  }
+
+  .welcome-section h1 {
+    font-size: 24px;
+  }
+
+  .welcome-date {
+    white-space: normal;
+  }
+
+  .user-summary {
+    padding: 18px;
+    flex-wrap: wrap;
+  }
+
+  .role-badge {
+    margin-left: 0;
+  }
+
+  .modules-grid,
+  .additional-grid,
+  .patient-modules-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .quick-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .quick-action {
+    padding: 15px;
+    font-size: 12px;
+    gap: 8px;
+  }
+
+  .quick-action ion-icon {
+    font-size: 21px;
+  }
+
+  .module-card {
+    min-height: 190px;
+  }
+
+  .section-heading h2 {
+    font-size: 19px;
+  }
+
+  .patient-welcome {
+    min-height: auto;
+  }
+
+  .patient-welcome-icon {
+    display: none;
+  }
+
+  .patient-module-card {
+    min-height: 200px;
+  }
+
+  .patient-info-card {
+    padding: 19px;
+  }
+
+  .patient-profile-card {
+    padding: 8px 18px;
+  }
 }

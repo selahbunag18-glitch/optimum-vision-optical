@@ -1,0 +1,48 @@
+
+@use '../login/login.page' as login;
+
+$teal: #0b8f94;
+$teal-dark: #087277;
+$navy: #0a2540;
+$text-muted: #5b6b7c;
+
+.rules {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  margin: 8px 4px 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.78rem;
+  color: $text-muted;
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    transition: color 0.2s ease;
+  }
+
+  li.ok {
+    color: $teal-dark;
+  }
+}
+
+.success {
+  text-align: center;
+  animation: fade-in 0.3s ease-out both;
+
+  > ion-icon {
+    font-size: 64px;
+    color: $teal;
+  }
+
+  h2 {
+    margin: 8px 0 6px;
+    color: $navy;
+  }
+
+  .sub {
+    margin-bottom: 20px;
+  }
+}

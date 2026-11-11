@@ -1,3 +1,150 @@
+
 <ion-app>
-  <ion-router-outlet></ion-router-outlet>
+
+  <!-- Shared Navigation Menu -->
+  <ion-menu
+    menuId="clinic-menu"
+    contentId="clinic-main-content"
+    side="end"
+    type="overlay"
+    [disabled]="!showNavigation()"
+  >
+
+    <!-- SIDEBAR HEADER -->
+    <ion-header class="ion-no-border">
+      <ion-toolbar class="menu-toolbar">
+
+        <div class="menu-brand">
+
+          <!-- USER ICON -->
+          <div class="brand-icon">
+            <ion-icon
+              name="person-circle-outline">
+            </ion-icon>
+          </div>
+
+          <!-- CLINIC OWNER / STAFF -->
+          <div class="brand-information">
+
+            @if (user(); as currentUser) {
+
+              <h2>
+                {{ currentUser.role === 'owner'
+                  ? 'Clinic Owner'
+                  : 'Clinic Staff' }}
+              </h2>
+
+              <p>Doctor</p>
+
+            } @else {
+
+              <h2>Clinic</h2>
+              <p>Doctor</p>
+
+            }
+
+          </div>
+
+          <!-- VISIBLE CLOSE BUTTON -->
+          <ion-menu-toggle
+            menu="clinic-menu"
+            [autoHide]="false">
+
+            <ion-button
+              class="menu-close-button"
+              fill="clear"
+              aria-label="Close navigation menu">
+
+              <span
+                class="close-symbol"
+                aria-hidden="true">&times;</span>
+
+            </ion-button>
+
+          </ion-menu-toggle>
+
+        </div>
+
+      </ion-toolbar>
+    </ion-header>
+
+    <!-- SIDEBAR CONTENT -->
+    <ion-content class="menu-content">
+
+      <!-- MANAGEMENT LABEL -->
+      <div class="menu-section-label">
+        MANAGEMENT
+      </div>
+
+      <!-- NAVIGATION ITEMS -->
+      <ion-list lines="none">
+
+        @for (
+          item of visibleNavigationItems;
+          track item.route
+        ) {
+
+          <ion-menu-toggle
+            menu="clinic-menu"
+            [autoHide]="true">
+
+            <ion-item
+              button
+              detail="false"
+              [routerLink]="
+                item.route === '/home'
+                  ? dashboardRoute
+                  : item.route
+              "
+              [class.active-menu-item]="
+                isActive(item.route)
+              "
+            >
+
+              <ion-icon
+                slot="start"
+                [name]="item.icon">
+              </ion-icon>
+
+              <ion-label>
+                {{ item.label }}
+              </ion-label>
+
+            </ion-item>
+
+          </ion-menu-toggle>
+
+        }
+
+      </ion-list>
+
+      <!-- LOGOUT -->
+      <div class="menu-bottom">
+
+        <ion-button
+          expand="block"
+          fill="outline"
+          (click)="logout()"
+        >
+
+          <ion-icon
+            slot="start"
+            name="log-out-outline">
+          </ion-icon>
+
+          Logout
+
+        </ion-button>
+
+      </div>
+
+    </ion-content>
+
+  </ion-menu>
+
+  <!-- MAIN APPLICATION CONTENT -->
+  <ion-router-outlet
+    id="clinic-main-content">
+  </ion-router-outlet>
+
 </ion-app>

@@ -1,0 +1,140 @@
+
+<ion-content [fullscreen]="true" class="login-content">
+  <div class="shell">
+    <header class="hero">
+      <div class="logo" aria-hidden="true">
+        <ion-icon name="eye-outline"></ion-icon>
+      </div>
+      <h1>Optimum Vision</h1>
+      <p>Optical Clinic</p>
+    </header>
+
+    <main class="card">
+      <h2>Welcome back</h2>
+      <p class="sub">
+        Sign in to manage your appointments and clinic services.
+      </p>
+
+      @if (lockSeconds() > 0) {
+        <div class="alert alert-warn" role="alert">
+          <ion-icon name="time-outline"></ion-icon>
+          <div>
+            <strong>{{ errorMessage() }}</strong>
+            <span>
+              Try again in {{ lockSeconds() }}
+              second{{ lockSeconds() === 1 ? '' : 's' }}.
+            </span>
+          </div>
+        </div>
+      } @else if (errorMessage()) {
+        <div class="alert alert-error" role="alert">
+          <ion-icon name="alert-circle-outline"></ion-icon>
+          <div>
+            <strong>{{ errorMessage() }}</strong>
+            @if (attemptsHint()) {
+              <span>{{ attemptsHint() }}</span>
+            }
+          </div>
+        </div>
+      }
+
+      <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+        <div class="field">
+          <ion-input
+            formControlName="email"
+            type="email"
+            inputmode="email"
+            autocomplete="email"
+            fill="outline"
+            label="Email"
+            labelPlacement="floating"
+            placeholder="you@example.com"
+          >
+            <ion-icon
+              slot="start"
+              name="mail-outline"
+              aria-hidden="true"
+            ></ion-icon>
+          </ion-input>
+
+          @if (form.controls.email.touched && form.controls.email.invalid) {
+            <small class="field-error">
+              {{ form.controls.email.hasError('required')
+                ? 'Email is required.'
+                : 'Enter a valid email address.' }}
+            </small>
+          } @else if (fieldErrors()['email']) {
+            <small class="field-error">
+              {{ fieldErrors()['email'] }}
+            </small>
+          }
+        </div>
+
+        <div class="field">
+          <ion-input
+            formControlName="password"
+            [type]="showPassword() ? 'text' : 'password'"
+            autocomplete="current-password"
+            fill="outline"
+            label="Password"
+            labelPlacement="floating"
+          >
+            <ion-icon
+              slot="start"
+              name="lock-closed-outline"
+              aria-hidden="true"
+            ></ion-icon>
+
+            <ion-button
+              slot="end"
+              fill="clear"
+              type="button"
+              class="eye-btn"
+              [attr.aria-label]="showPassword()
+                ? 'Hide password'
+                : 'Show password'"
+              (click)="togglePassword()"
+            >
+              <ion-icon
+                slot="icon-only"
+                [name]="showPassword()
+                  ? 'eye-off-outline'
+                  : 'eye-outline'"
+              ></ion-icon>
+            </ion-button>
+          </ion-input>
+
+          @if (form.controls.password.touched && form.controls.password.invalid) {
+            <small class="field-error">
+              Password is required.
+            </small>
+          } @else if (fieldErrors()['password']) {
+            <small class="field-error">
+              {{ fieldErrors()['password'] }}
+            </small>
+          }
+        </div>
+
+        <ion-button
+          expand="block"
+          type="submit"
+          class="submit"
+          [disabled]="loading() || lockSeconds() > 0"
+        >
+          @if (loading()) {
+            <ion-spinner name="crescent"></ion-spinner>
+          } @else if (lockSeconds() > 0) {
+            Locked ({{ lockSeconds() }}s)
+          } @else {
+            Sign in
+          }
+        </ion-button>
+      </form>
+
+      <p class="switch">
+        New patient?
+        <a routerLink="/register">Create an account</a>
+      </p>
+    </main>
+  </div>
+</ion-content>
