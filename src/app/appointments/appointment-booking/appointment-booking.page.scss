@@ -1,4 +1,3 @@
-
 :host {
   display: block;
 
@@ -13,17 +12,19 @@
 
 // Header
 .bar {
-  --background: #ffffff;
-  --color: #172033;
-  --border-color: #e2e8f0;
+  --background: #245783;
+  --color: #ffffff;
+  --border-color: #245783;
 
   ion-title {
+    --color: #ffffff;
+    color: #ffffff;
     font-size: 17px;
     font-weight: 700;
   }
 
   ion-button {
-    --color: #334155;
+    --color: #ffffff;
   }
 }
 

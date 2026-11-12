@@ -6,19 +6,22 @@ import { firstValueFrom } from 'rxjs';
 
 import {
   IonHeader, IonToolbar, IonTitle, IonContent,
-  IonButton, IonIcon, IonSpinner, IonCard,
-  IonCardContent, IonChip
+  IonButtons, IonButton, IonIcon, IonSpinner, IonCard,
+  IonCardContent, IonChip, NavController
 } from '@ionic/angular';
 
 import { addIcons } from 'ionicons';
 import {
-  addOutline, refreshOutline, arrowBackOutline,
+  addOutline, arrowBackOutline,
   receiptOutline, alertCircleOutline, eyeOutline,
   closeCircleOutline, cashOutline, statsChartOutline
 } from 'ionicons/icons';
 
 import { ApiService } from '../../core/services/api.service';
 import { AuthService } from '../../core/services/auth.service';
+
+// Dashboard route (home page para sa owner at staff)
+const DASHBOARD_ROUTE = '/home';
 
 interface Sale {
   id: number;
@@ -82,13 +85,14 @@ interface SalesData {
     FormsModule,
     RouterLink,
     IonHeader, IonToolbar, IonTitle, IonContent,
-    IonButton, IonIcon, IonSpinner, IonCard,
+    IonButtons, IonButton, IonIcon, IonSpinner, IonCard,
     IonCardContent, IonChip
   ]
 })
 export class SalesListPage implements OnInit {
   private readonly api = inject(ApiService);
   private readonly auth = inject(AuthService);
+  private readonly navCtrl = inject(NavController);
 
   readonly isOwner = signal(false);
 
@@ -123,7 +127,6 @@ export class SalesListPage implements OnInit {
   constructor() {
     addIcons({
       addOutline,
-      refreshOutline,
       arrowBackOutline,
       receiptOutline,
       alertCircleOutline,
@@ -142,6 +145,16 @@ export class SalesListPage implements OnInit {
   ionViewWillEnter(): void {
     void this.checkOwnerRole();
     void this.loadSales();
+  }
+
+  // Alisin ang focus bago umalis para mawala ang aria-hidden warning
+  ionViewWillLeave(): void {
+    (document.activeElement as HTMLElement | null)?.blur();
+  }
+
+  // Diretso sa dashboard (hindi sa browser history)
+  goBack(): void {
+    void this.navCtrl.navigateBack(DASHBOARD_ROUTE);
   }
 
   async checkOwnerRole(): Promise<void> {

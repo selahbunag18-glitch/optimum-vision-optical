@@ -1,4 +1,3 @@
-
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
@@ -7,6 +6,7 @@ import {
   AlertController,
   ToastController,
   IonButton,
+  IonButtons,
   IonContent,
   IonHeader,
   IonIcon,
@@ -18,7 +18,8 @@ import {
   IonInput,
   IonRefresher,
   IonRefresherContent,
-  ViewWillEnter
+  ViewWillEnter,
+  ViewWillLeave
 } from '@ionic/angular';
 
 import { addIcons } from 'ionicons';
@@ -38,7 +39,8 @@ import {
   checkmarkOutline,
   banOutline,
   warningOutline,
-  documentTextOutline
+  documentTextOutline,
+  arrowBackOutline
 } from 'ionicons/icons';
 
 import {
@@ -60,6 +62,7 @@ import { ApiService } from '../../core/services/api.service';
     CommonModule,
     RouterLink,
     IonButton,
+    IonButtons,
     IonContent,
     IonHeader,
     IonIcon,
@@ -73,7 +76,7 @@ import { ApiService } from '../../core/services/api.service';
     IonRefresherContent
   ]
 })
-export class AppointmentListPage implements ViewWillEnter {
+export class AppointmentListPage implements ViewWillEnter, ViewWillLeave {
 
   private readonly appointmentService = inject(AppointmentService);
   private readonly alertController = inject(AlertController);
@@ -120,12 +123,18 @@ export class AppointmentListPage implements ViewWillEnter {
       checkmarkOutline,
       banOutline,
       warningOutline,
-      documentTextOutline
+      documentTextOutline,
+      arrowBackOutline
     });
   }
 
   ionViewWillEnter(): void {
     void this.loadAppointments();
+  }
+
+  // Alisin ang focus bago umalis para mawala ang aria-hidden warning
+  ionViewWillLeave(): void {
+    (document.activeElement as HTMLElement | null)?.blur();
   }
 
   async loadAppointments(): Promise<void> {

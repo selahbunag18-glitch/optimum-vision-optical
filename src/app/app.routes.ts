@@ -1,17 +1,15 @@
-
 import { Routes } from '@angular/router';
+
 import { roleGuard } from './core/guards/role.guard';
+import { guestGuard } from './core/guards/guest.guard';
 
 export const routes: Routes = [
-
   // =====================================
   // HOME PAGE - ALL ROLES
   // =====================================
   {
     path: 'home',
-    loadComponent: () =>
-      import('./home/home.page')
-        .then((m) => m.HomePage),
+    loadComponent: () => import('./home/home.page').then((m) => m.HomePage),
     canActivate: [roleGuard],
     data: {
       title: 'Clinic Dashboard',
@@ -24,15 +22,14 @@ export const routes: Routes = [
   // =====================================
   {
     path: 'login',
-    loadComponent: () =>
-      import('./login/login.page')
-        .then((m) => m.LoginPage),
+    loadComponent: () => import('./login/login.page').then((m) => m.LoginPage),
+    canActivate: [guestGuard],
   },
+
   {
     path: 'register',
-    loadComponent: () =>
-      import('./register/register.page')
-        .then((m) => m.RegisterPage),
+    loadComponent: () => import('./register/register.page').then((m) => m.RegisterPage),
+    canActivate: [guestGuard],
   },
 
   // =====================================
@@ -40,9 +37,7 @@ export const routes: Routes = [
   // =====================================
   {
     path: 'patient/profile',
-    loadComponent: () =>
-      import('./patient-profile/patient-profile.page')
-        .then((m) => m.PatientProfilePage),
+    loadComponent: () => import('./patient-profile/patient-profile.page').then((m) => m.PatientProfilePage),
     canActivate: [roleGuard],
     data: {
       title: 'My Profile',
@@ -55,12 +50,23 @@ export const routes: Routes = [
   // =====================================
   {
     path: 'patient',
-    loadComponent: () =>
-      import('./home/home.page')
-        .then((m) => m.HomePage),
+    loadComponent: () => import('./home/home.page').then((m) => m.HomePage),
     canActivate: [roleGuard],
     data: {
       title: 'Patient Dashboard',
+      role: 'patient',
+    },
+  },
+
+  // =====================================
+  // PATIENT PRODUCT CATALOG
+  // =====================================
+  {
+    path: 'product-catalog',
+    loadComponent: () => import('./product-catalog/product-catalog.page').then((m) => m.ProductCatalogPage),
+    canActivate: [roleGuard],
+    data: {
+      title: 'Product Catalog',
       role: 'patient',
     },
   },
@@ -70,9 +76,7 @@ export const routes: Routes = [
   // =====================================
   {
     path: 'staff',
-    loadComponent: () =>
-      import('./home/home.page')
-        .then((m) => m.HomePage),
+    loadComponent: () => import('./home/home.page').then((m) => m.HomePage),
     canActivate: [roleGuard],
     data: {
       title: 'Clinic Staff Dashboard',
@@ -85,9 +89,7 @@ export const routes: Routes = [
   // =====================================
   {
     path: 'owner',
-    loadComponent: () =>
-      import('./home/home.page')
-        .then((m) => m.HomePage),
+    loadComponent: () => import('./home/home.page').then((m) => m.HomePage),
     canActivate: [roleGuard],
     data: {
       title: 'Clinic Owner Dashboard',
@@ -100,9 +102,7 @@ export const routes: Routes = [
   // =====================================
   {
     path: 'patients',
-    loadComponent: () =>
-      import('./patients/patient-list/patient-list.page')
-        .then((m) => m.PatientListPage),
+    loadComponent: () => import('./patients/patient-list/patient-list.page').then((m) => m.PatientListPage),
     canActivate: [roleGuard],
     data: {
       title: 'Patient Management',
@@ -112,9 +112,7 @@ export const routes: Routes = [
 
   {
     path: 'patients/new',
-    loadComponent: () =>
-      import('./patients/patient-create/patient-create.page')
-        .then((m) => m.PatientCreatePage),
+    loadComponent: () => import('./patients/patient-create/patient-create.page').then((m) => m.PatientCreatePage),
     canActivate: [roleGuard],
     data: {
       title: 'Add New Patient',
@@ -124,9 +122,7 @@ export const routes: Routes = [
 
   {
     path: 'patients/:id/history',
-    loadComponent: () =>
-      import('./patients/patient-history/patient-history.page')
-        .then((m) => m.PatientHistoryPage),
+    loadComponent: () => import('./patients/patient-history/patient-history.page').then((m) => m.PatientHistoryPage),
     canActivate: [roleGuard],
     data: {
       title: 'Patient History',
@@ -139,9 +135,7 @@ export const routes: Routes = [
   // =====================================
   {
     path: 'patients/:patientId/examinations',
-    loadComponent: () =>
-      import('./eye-examinations/eye-examinations.page')
-        .then((m) => m.EyeExaminationsPage),
+    loadComponent: () => import('./eye-examinations/eye-examinations.page').then((m) => m.EyeExaminationsPage),
     canActivate: [roleGuard],
     data: {
       title: 'Eye Examination & Prescription',
@@ -154,9 +148,7 @@ export const routes: Routes = [
   // =====================================
   {
     path: 'patients/:id',
-    loadComponent: () =>
-      import('./patients/patient-details/patient-details.page')
-        .then((m) => m.PatientDetailsPage),
+    loadComponent: () => import('./patients/patient-details/patient-details.page').then((m) => m.PatientDetailsPage),
     canActivate: [roleGuard],
     data: {
       title: 'Patient Details',
@@ -166,9 +158,7 @@ export const routes: Routes = [
 
   {
     path: 'patients/:id/edit',
-    loadComponent: () =>
-      import('./patients/patient-edit/patient-edit.page')
-        .then((m) => m.PatientEditPage),
+    loadComponent: () => import('./patients/patient-edit/patient-edit.page').then((m) => m.PatientEditPage),
     canActivate: [roleGuard],
     data: {
       title: 'Edit Patient',
@@ -182,8 +172,7 @@ export const routes: Routes = [
   {
     path: 'appointments/book',
     loadComponent: () =>
-      import('./appointments/appointment-booking/appointment-booking.page')
-        .then((m) => m.AppointmentBookingPage),
+      import('./appointments/appointment-booking/appointment-booking.page').then((m) => m.AppointmentBookingPage),
     canActivate: [roleGuard],
     data: {
       title: 'Book Appointment',
@@ -197,8 +186,7 @@ export const routes: Routes = [
   {
     path: 'appointments',
     loadComponent: () =>
-      import('./appointments/appointment-list/appointment-list.page')
-        .then((m) => m.AppointmentListPage),
+      import('./appointments/appointment-list/appointment-list.page').then((m) => m.AppointmentListPage),
     canActivate: [roleGuard],
     data: {
       title: 'Appointment Management',
@@ -209,8 +197,7 @@ export const routes: Routes = [
   {
     path: 'appointments/slots',
     loadComponent: () =>
-      import('./appointments/slot-management/slot-management.page')
-        .then((m) => m.SlotManagementPage),
+      import('./appointments/slot-management/slot-management.page').then((m) => m.SlotManagementPage),
     canActivate: [roleGuard],
     data: {
       title: 'Appointment Slot Management',
@@ -221,8 +208,7 @@ export const routes: Routes = [
   {
     path: 'appointments/:id',
     loadComponent: () =>
-      import('./appointments/appointment-details/appointment-details.page')
-        .then((m) => m.AppointmentDetailsPage),
+      import('./appointments/appointment-details/appointment-details.page').then((m) => m.AppointmentDetailsPage),
     canActivate: [roleGuard],
     data: {
       title: 'Appointment Details',
@@ -236,8 +222,7 @@ export const routes: Routes = [
   {
     path: 'inventory/new',
     loadComponent: () =>
-      import('./inventory/inventory-create/inventory-create.page')
-        .then((m) => m.InventoryCreatePage),
+      import('./inventory/inventory-create/inventory-create.page').then((m) => m.InventoryCreatePage),
     canActivate: [roleGuard],
     data: {
       title: 'Add New Product',
@@ -248,8 +233,7 @@ export const routes: Routes = [
   {
     path: 'inventory/stock-in',
     loadComponent: () =>
-      import('./inventory/inventory-stock-in/inventory-stock-in.page')
-        .then((m) => m.InventoryStockInPage),
+      import('./inventory/inventory-stock-in/inventory-stock-in.page').then((m) => m.InventoryStockInPage),
     canActivate: [roleGuard],
     data: {
       title: 'Stock In',
@@ -260,8 +244,7 @@ export const routes: Routes = [
   {
     path: 'inventory/batches',
     loadComponent: () =>
-      import('./inventory/inventory-batches/inventory-batches.page')
-        .then((m) => m.InventoryBatchesPage),
+      import('./inventory/inventory-batches/inventory-batches.page').then((m) => m.InventoryBatchesPage),
     canActivate: [roleGuard],
     data: {
       title: 'Inventory Batch Monitoring',
@@ -271,9 +254,7 @@ export const routes: Routes = [
 
   {
     path: 'inventory/:id/edit',
-    loadComponent: () =>
-      import('./inventory/inventory-edit/inventory-edit.page')
-        .then((m) => m.InventoryEditPage),
+    loadComponent: () => import('./inventory/inventory-edit/inventory-edit.page').then((m) => m.InventoryEditPage),
     canActivate: [roleGuard],
     data: {
       title: 'Edit Product',
@@ -283,9 +264,7 @@ export const routes: Routes = [
 
   {
     path: 'inventory',
-    loadComponent: () =>
-      import('./inventory/inventory-list/inventory-list.page')
-        .then((m) => m.InventoryListPage),
+    loadComponent: () => import('./inventory/inventory-list/inventory-list.page').then((m) => m.InventoryListPage),
     canActivate: [roleGuard],
     data: {
       title: 'Inventory Management',
@@ -298,9 +277,7 @@ export const routes: Routes = [
   // =====================================
   {
     path: 'sales/reports',
-    loadComponent: () =>
-      import('./sales/sales-reports/sales-reports.page')
-        .then((m) => m.SalesReportsPage),
+    loadComponent: () => import('./sales/sales-reports/sales-reports.page').then((m) => m.SalesReportsPage),
     canActivate: [roleGuard],
     data: {
       title: 'Sales Reports Dashboard',
@@ -313,9 +290,7 @@ export const routes: Routes = [
   // =====================================
   {
     path: 'sales',
-    loadComponent: () =>
-      import('./sales/sales-list/sales-list.page')
-        .then((m) => m.SalesListPage),
+    loadComponent: () => import('./sales/sales-list/sales-list.page').then((m) => m.SalesListPage),
     canActivate: [roleGuard],
     data: {
       title: 'Sales Management',
@@ -325,9 +300,7 @@ export const routes: Routes = [
 
   {
     path: 'sales/create',
-    loadComponent: () =>
-      import('./sales/sales-create/sales-create.page')
-        .then((m) => m.SalesCreatePage),
+    loadComponent: () => import('./sales/sales-create/sales-create.page').then((m) => m.SalesCreatePage),
     canActivate: [roleGuard],
     data: {
       title: 'Create New Sale',
@@ -343,11 +316,13 @@ export const routes: Routes = [
     redirectTo: 'sales',
     pathMatch: 'full',
   },
+
   {
     path: 'sales-create',
     redirectTo: 'sales/create',
     pathMatch: 'full',
   },
+
   {
     path: 'sales-reports',
     redirectTo: 'sales/reports',
@@ -362,21 +337,25 @@ export const routes: Routes = [
     redirectTo: 'inventory/batches',
     pathMatch: 'full',
   },
+
   {
     path: 'inventory-stock-in',
     redirectTo: 'inventory/stock-in',
     pathMatch: 'full',
   },
+
   {
     path: 'inventory-edit',
     redirectTo: 'inventory',
     pathMatch: 'full',
   },
+
   {
     path: 'inventory-create',
     redirectTo: 'inventory/new',
     pathMatch: 'full',
   },
+
   {
     path: 'inventory-list',
     redirectTo: 'inventory',
@@ -397,9 +376,7 @@ export const routes: Routes = [
   // =====================================
   {
     path: 'eye-examinations',
-    loadComponent: () =>
-      import('./eye-examinations/eye-examinations.page')
-        .then((m) => m.EyeExaminationsPage),
+    loadComponent: () => import('./eye-examinations/eye-examinations.page').then((m) => m.EyeExaminationsPage),
     canActivate: [roleGuard],
     data: {
       title: 'Eye Examination & Prescription',
@@ -415,5 +392,8 @@ export const routes: Routes = [
     redirectTo: 'login',
     pathMatch: 'full',
   },
-
+  {
+    path: 'clinic-location',
+    loadComponent: () => import('./clinic-location/clinic-location.page').then((m) => m.ClinicLocationPage),
+  },
 ];

@@ -1,4 +1,3 @@
-
 import {
   Component,
   OnInit,
@@ -18,7 +17,6 @@ import {
   IonContent,
   IonButtons,
   IonButton,
-  IonMenuButton,
   IonIcon,
   IonSpinner
 } from '@ionic/angular';
@@ -28,24 +26,20 @@ import { addIcons } from 'ionicons';
 import {
   peopleOutline,
   calendarOutline,
-  eyeOutline,
   cubeOutline,
   cartOutline,
-  receiptOutline,
-  barChartOutline,
   logOutOutline,
-  refreshOutline,
   addCircleOutline,
   personCircleOutline,
-  alertCircleOutline,
   timeOutline,
-  menuOutline,
   calendarClearOutline,
   glassesOutline,
-  chevronForwardOutline,
-  shieldCheckmarkOutline,
-  mailOutline,
-  informationCircleOutline
+  eyeOutline,
+  locationOutline,
+  notificationsOutline,
+  homeOutline,
+  menuOutline,
+  closeOutline
 } from 'ionicons/icons';
 
 import { AuthUser } from '../core/models/api.models';
@@ -56,7 +50,6 @@ interface DashboardModule {
   description: string;
   icon: string;
   route?: string;
-  ownerOnly?: boolean;
   comingSoon?: boolean;
 }
 
@@ -73,7 +66,6 @@ interface DashboardModule {
     IonContent,
     IonButtons,
     IonButton,
-    IonMenuButton,
     IonIcon,
     IonSpinner
   ]
@@ -86,24 +78,36 @@ export class HomePage implements OnInit {
   readonly user = signal<AuthUser | null>(null);
   readonly loading = signal(true);
   readonly loggingOut = signal(false);
+  readonly menuOpen = signal(false);
 
+  // OWNER / STAFF QUICK ACTIONS
+  readonly quickActions: DashboardModule[] = [
+    {
+      title: 'Add Patient',
+      description: 'Register a new patient.',
+      icon: 'add-circle-outline',
+      route: '/patients/new'
+    },
+    {
+      title: 'Inventory Batches',
+      description: 'Monitor inventory batches and stock.',
+      icon: 'cube-outline',
+      route: '/inventory/batches'
+    },
+    {
+      title: 'Appointment Slots',
+      description: 'Manage available booking schedules.',
+      icon: 'time-outline',
+      route: '/appointments/slots'
+    }
+  ];
+
+  // OWNER / STAFF MANAGEMENT MODULES
   readonly modules: DashboardModule[] = [
     {
       title: 'Patient Management',
       description: 'Manage patient records and information.',
       icon: 'people-outline',
-      route: '/patients'
-    },
-    {
-      title: 'Appointments',
-      description: 'Manage bookings and appointment schedules.',
-      icon: 'calendar-outline',
-      route: '/appointments'
-    },
-    {
-      title: 'Eye Examination',
-      description: 'Access patient examinations and prescriptions.',
-      icon: 'eye-outline',
       route: '/patients'
     },
     {
@@ -113,48 +117,56 @@ export class HomePage implements OnInit {
       route: '/inventory'
     },
     {
+      title: 'Appointments',
+      description: 'Manage bookings and appointment schedules.',
+      icon: 'calendar-outline',
+      route: '/appointments'
+    },
+    {
       title: 'Sales Management',
       description: 'Manage sales transactions and payments.',
       icon: 'cart-outline',
       route: '/sales'
-    },
-    {
-      title: 'Sales Reports',
-      description: 'View clinic sales reports and analytics.',
-      icon: 'bar-chart-outline',
-      route: '/sales/reports',
-      ownerOnly: true
     }
   ];
 
+  // PATIENT MODULES
   readonly patientModules: DashboardModule[] = [
     {
       title: 'Book Appointment',
-      description:
-        'Schedule your next eye consultation using available clinic time slots.',
+      description: 'Schedule your next eye consultation.',
       icon: 'calendar-outline',
       route: '/appointments/book'
     },
     {
       title: 'My Appointments',
-      description:
-        'View your upcoming and previous appointment bookings.',
+      description: 'View your appointment bookings.',
       icon: 'calendar-clear-outline',
       comingSoon: true
     },
     {
-      title: 'Optical Products',
-      description:
-        'Browse available eyeglass frames, contact lenses and optical products.',
-      icon: 'glasses-outline',
+      title: 'Prescription History',
+      description: 'View your eye prescription history.',
+      icon: 'eye-outline',
       comingSoon: true
     },
     {
-      title: 'My Profile',
-      description:
-        'View your registered patient account information.',
-      icon: 'person-circle-outline',
-      route: '/patient'
+      title: 'Product Catalog',
+      description: 'Browse optical products.',
+      icon: 'glasses-outline',
+      route: '/product-catalog'
+    },
+    {
+      title: 'Clinic Location',
+      description: 'Find our optical clinic.',
+      icon: 'location-outline',
+      route: '/clinic-location'
+    },
+    {
+      title: 'Notifications',
+      description: 'View appointment updates.',
+      icon: 'notifications-outline',
+      comingSoon: true
     }
   ];
 
@@ -162,24 +174,20 @@ export class HomePage implements OnInit {
     addIcons({
       peopleOutline,
       calendarOutline,
-      eyeOutline,
       cubeOutline,
       cartOutline,
-      receiptOutline,
-      barChartOutline,
       logOutOutline,
-      refreshOutline,
       addCircleOutline,
       personCircleOutline,
-      alertCircleOutline,
       timeOutline,
-      menuOutline,
       calendarClearOutline,
       glassesOutline,
-      chevronForwardOutline,
-      shieldCheckmarkOutline,
-      mailOutline,
-      informationCircleOutline
+      eyeOutline,
+      locationOutline,
+      notificationsOutline,
+      homeOutline,
+      menuOutline,
+      closeOutline
     });
   }
 
@@ -187,31 +195,27 @@ export class HomePage implements OnInit {
     await this.loadUser();
   }
 
+  ionViewWillEnter(): void {
+    void this.loadUser();
+  }
+
   async loadUser(): Promise<void> {
     this.loading.set(true);
+    this.menuOpen.set(false);
 
     try {
       const currentUser = await this.auth.getCurrentUser();
 
-      if (!currentUser) {
-        this.user.set(null);
-
-        await this.router.navigateByUrl('/login', {
-          replaceUrl: true
-        });
-        return;
-      }
-
       if (
-        currentUser.role !== 'owner' &&
-        currentUser.role !== 'staff' &&
-        currentUser.role !== 'patient'
+        !currentUser ||
+        !['owner', 'staff', 'patient'].includes(currentUser.role)
       ) {
         this.user.set(null);
 
         await this.router.navigateByUrl('/login', {
           replaceUrl: true
         });
+
         return;
       }
 
@@ -251,36 +255,65 @@ export class HomePage implements OnInit {
     return this.user()?.role === 'patient';
   }
 
-  get dashboardTitle(): string {
+  get roleLabel(): string {
     const role = this.user()?.role;
 
     if (role === 'owner') {
-      return 'Clinic Owner Dashboard';
+      return 'Clinic Owner';
     }
 
     if (role === 'staff') {
-      return 'Clinic Staff Dashboard';
+      return 'Clinic Staff';
     }
 
-    return 'Patient Dashboard';
+    return 'Patient';
   }
 
-  get visibleModules(): DashboardModule[] {
-    const isOwner = this.user()?.role === 'owner';
-
-    return this.modules.filter(
-      (module) => !module.ownerOnly || isOwner
-    );
+  get fullName(): string {
+    return this.user()?.full_name?.trim() || 'User';
   }
 
-  get today(): string {
-    return new Date().toLocaleDateString('en-PH', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      timeZone: 'Asia/Manila'
-    });
+  get firstName(): string {
+    return this.fullName.split(/\s+/)[0];
+  }
+
+  get dashboardHome(): string {
+    const role = this.user()?.role;
+
+    if (role === 'owner') {
+      return '/owner';
+    }
+
+    if (role === 'staff') {
+      return '/staff';
+    }
+
+    return '/patient';
+  }
+
+  toggleMenu(): void {
+    if (this.loading() || !this.user()) {
+      return;
+    }
+
+    this.menuOpen.update(open => !open);
+  }
+
+  closeMenu(): void {
+    this.menuOpen.set(false);
+  }
+
+  // =====================================
+  // REMOVE FOCUS BEFORE NAVIGATING AWAY
+  // Prevents "Blocked aria-hidden on an
+  // element because its descendant
+  // retained focus" console warnings when
+  // this page is hidden mid-transition.
+  // =====================================
+
+  blurLink(event: Event): void {
+    const target = event.currentTarget as HTMLElement | null;
+    target?.blur();
   }
 
   async logout(): Promise<void> {
@@ -289,6 +322,7 @@ export class HomePage implements OnInit {
     }
 
     this.loggingOut.set(true);
+    this.closeMenu();
 
     try {
       await this.auth.logout();

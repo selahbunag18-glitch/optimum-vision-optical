@@ -6,7 +6,11 @@ import {
 } from '@angular/core';
 
 import { CommonModule } from '@angular/common';
-import { Router, RouterLink } from '@angular/router';
+
+import {
+  Router,
+  RouterLink
+} from '@angular/router';
 
 import {
   IonButton,
@@ -14,7 +18,6 @@ import {
   IonContent,
   IonHeader,
   IonIcon,
-  IonInput,
   IonSpinner,
   IonTextarea,
   IonTitle,
@@ -60,7 +63,6 @@ import { ApiService } from '../../core/services/api.service';
     IonContent,
     IonHeader,
     IonIcon,
-    IonInput,
     IonSpinner,
     IonTextarea,
     IonTitle,
@@ -69,25 +71,53 @@ import { ApiService } from '../../core/services/api.service';
 })
 export class AppointmentBookingPage implements ViewWillEnter {
 
+  // =====================================
+  // SERVICES
+  // =====================================
+
   private readonly slotService = inject(SlotService);
   private readonly appointmentService = inject(AppointmentService);
   private readonly router = inject(Router);
+
+  // =====================================
+  // LOADING STATES
+  // =====================================
 
   readonly loadingDates = signal(true);
   readonly loadingSlots = signal(false);
   readonly booking = signal(false);
 
+  // =====================================
+  // ERROR AND SUCCESS STATES
+  // =====================================
+
   readonly error = signal<string | null>(null);
   readonly success = signal(false);
 
+  // =====================================
+  // AVAILABLE DATES AND SLOTS
+  // =====================================
+
   readonly availableDates = signal<AvailableDate[]>([]);
   readonly availableSlots = signal<AppointmentSlot[]>([]);
+
+  // =====================================
+  // BOOKING FORM
+  // =====================================
 
   readonly selectedDate = signal('');
   readonly selectedSlotId = signal<number | null>(null);
   readonly reason = signal('');
 
+  // =====================================
+  // BOOKED APPOINTMENT
+  // =====================================
+
   readonly bookedAppointment = signal<Appointment | null>(null);
+
+  // =====================================
+  // ICON REGISTRATION
+  // =====================================
 
   constructor() {
     addIcons({
@@ -101,22 +131,32 @@ export class AppointmentBookingPage implements ViewWillEnter {
     });
   }
 
+  // =====================================
+  // PAGE LIFECYCLE
+  // =====================================
+
   ionViewWillEnter(): void {
     if (!this.success()) {
       void this.loadAvailableDates();
     }
   }
 
+  // =====================================
+  // LOAD AVAILABLE DATES
+  // =====================================
+
   async loadAvailableDates(): Promise<void> {
+
     this.loadingDates.set(true);
     this.error.set(null);
 
     try {
-      const result = await this.slotService.getAvailableDates();
+      const result =
+        await this.slotService.getAvailableDates();
 
       this.availableDates.set(result.dates);
 
-      // Clear selected date if no longer available
+      // Check if selected date is still available
       const dateStillAvailable = result.dates.some(
         item => item.date === this.selectedDate()
       );
@@ -128,7 +168,9 @@ export class AppointmentBookingPage implements ViewWillEnter {
       }
 
     } catch (err: unknown) {
+
       const apiError = ApiService.toApiError(err);
+
       this.error.set(apiError.message);
       this.availableDates.set([]);
       this.availableSlots.set([]);
@@ -140,11 +182,18 @@ export class AppointmentBookingPage implements ViewWillEnter {
     }
   }
 
+  // =====================================
+  // SELECT APPOINTMENT DATE
+  // =====================================
+
   async selectDate(date: string): Promise<void> {
+
     if (
       this.booking() ||
       this.loadingSlots() ||
-      !this.availableDates().some(item => item.date === date)
+      !this.availableDates().some(
+        item => item.date === date
+      )
     ) {
       return;
     }
@@ -156,14 +205,16 @@ export class AppointmentBookingPage implements ViewWillEnter {
     this.loadingSlots.set(true);
 
     try {
-      const result = await this.slotService.getAvailableSlots(date);
+      const result =
+        await this.slotService.getAvailableSlots(date);
 
-      // Prevent outdated requests from replacing the current date
+      // Prevent outdated responses
       if (this.selectedDate() === date) {
         this.availableSlots.set(result.slots);
       }
 
     } catch (err: unknown) {
+
       if (this.selectedDate() === date) {
         const apiError = ApiService.toApiError(err);
         this.error.set(apiError.message);
@@ -174,13 +225,20 @@ export class AppointmentBookingPage implements ViewWillEnter {
     }
   }
 
+  // =====================================
+  // SELECT APPOINTMENT SLOT
+  // =====================================
+
   selectSlot(slotId: number): void {
+
     if (this.booking()) {
       return;
     }
 
     const slot = this.availableSlots().find(
-      item => item.id === slotId && item.is_available
+      item =>
+        item.id === slotId &&
+        item.is_available
     );
 
     if (!slot) {
@@ -191,11 +249,23 @@ export class AppointmentBookingPage implements ViewWillEnter {
     this.error.set(null);
   }
 
-  onReasonChange(value: string | null | undefined): void {
+  // =====================================
+  // REASON FOR VISIT
+  // =====================================
+
+  onReasonChange(
+    value: string | null | undefined
+  ): void {
+
     this.reason.set(String(value ?? ''));
   }
 
+  // =====================================
+  // BOOKING VALIDATION
+  // =====================================
+
   get canBook(): boolean {
+
     return (
       !this.booking() &&
       !this.loadingDates() &&
@@ -207,7 +277,12 @@ export class AppointmentBookingPage implements ViewWillEnter {
     );
   }
 
+  // =====================================
+  // BOOK APPOINTMENT
+  // =====================================
+
   async bookAppointment(): Promise<void> {
+
     if (!this.canBook) {
       return;
     }
@@ -222,21 +297,27 @@ export class AppointmentBookingPage implements ViewWillEnter {
     this.error.set(null);
 
     try {
-      const appointment = await this.appointmentService.book(
-        slotId,
-        this.reason().trim()
-      );
+      const appointment =
+        await this.appointmentService.book(
+          slotId,
+          this.reason().trim()
+        );
 
       this.bookedAppointment.set(appointment);
       this.success.set(true);
 
     } catch (err: unknown) {
+
       const apiError = ApiService.toApiError(err);
 
       this.error.set(apiError.message);
 
-      // Refresh availability if the selected slot was already booked
-      if (apiError.status === 409 || apiError.status === 422) {
+      // Refresh if slot was already booked
+      if (
+        apiError.status === 409 ||
+        apiError.status === 422
+      ) {
+
         const date = this.selectedDate();
 
         this.selectedSlotId.set(null);
@@ -251,18 +332,26 @@ export class AppointmentBookingPage implements ViewWillEnter {
     }
   }
 
+  // =====================================
+  // REFRESH AVAILABLE SLOTS
+  // =====================================
+
   async refreshSlots(date: string): Promise<void> {
+
     this.loadingSlots.set(true);
 
     try {
-      const result = await this.slotService.getAvailableSlots(date);
+      const result =
+        await this.slotService.getAvailableSlots(date);
 
       if (this.selectedDate() === date) {
         this.availableSlots.set(result.slots);
       }
 
     } catch (err: unknown) {
+
       const apiError = ApiService.toApiError(err);
+
       this.error.set(apiError.message);
 
     } finally {
@@ -270,11 +359,18 @@ export class AppointmentBookingPage implements ViewWillEnter {
     }
   }
 
+  // =====================================
+  // BOOK ANOTHER APPOINTMENT
+  // =====================================
+
   async bookAnother(): Promise<void> {
+
     this.success.set(false);
     this.bookedAppointment.set(null);
+
     this.selectedDate.set('');
     this.selectedSlotId.set(null);
+
     this.availableSlots.set([]);
     this.reason.set('');
     this.error.set(null);
@@ -282,16 +378,28 @@ export class AppointmentBookingPage implements ViewWillEnter {
     await this.loadAvailableDates();
   }
 
+  // =====================================
+  // BACK TO PATIENT DASHBOARD
+  // =====================================
+
   async goToDashboard(): Promise<void> {
+
     await this.router.navigate(['/patient']);
   }
 
+  // =====================================
+  // FORMAT APPOINTMENT DATE
+  // =====================================
+
   formatDate(value: string): string {
+
     if (!value) {
       return 'N/A';
     }
 
-    const date = new Date(`${value}T00:00:00`);
+    const date = new Date(
+      `${value}T00:00:00`
+    );
 
     if (Number.isNaN(date.getTime())) {
       return value;

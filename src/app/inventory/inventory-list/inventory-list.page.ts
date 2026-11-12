@@ -1,4 +1,3 @@
-
 import {
   Component,
   OnInit,
@@ -37,8 +36,7 @@ import {
   cubeOutline,
   warningOutline,
   checkmarkCircleOutline,
-  createOutline
-} from 'ionicons/icons';
+  createOutline, arrowBackOutline } from 'ionicons/icons';
 
 import {
   InventoryService,
@@ -46,6 +44,8 @@ import {
   ProductCategory,
   ProductStatus
 } from '../../core/services/inventory.service';
+
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-inventory-list',
@@ -76,6 +76,7 @@ import {
 export class InventoryListPage implements OnInit {
 
   private readonly inventoryService = inject(InventoryService);
+  private readonly auth = inject(AuthService);
 
   // PRODUCT DATA
   readonly products = signal<InventoryProduct[]>([]);
@@ -94,6 +95,9 @@ export class InventoryListPage implements OnInit {
   readonly selectedCategory = signal<ProductCategory | ''>('');
   readonly selectedStatus = signal<ProductStatus | ''>('Active');
 
+  // DASHBOARD ROUTE (role-based)
+  readonly dashboardRoute = signal('/owner');
+
   // PRODUCT CATEGORIES
   readonly categories: ProductCategory[] = [
     'Eyeglass Frames',
@@ -107,19 +111,47 @@ export class InventoryListPage implements OnInit {
   readonly pageLimit = 20;
 
   constructor() {
-    addIcons({
-      addOutline,
-      refreshOutline,
-      searchOutline,
-      cubeOutline,
-      warningOutline,
-      checkmarkCircleOutline,
-      createOutline
-    });
+    addIcons({arrowBackOutline,addOutline,cubeOutline,checkmarkCircleOutline,warningOutline,createOutline,refreshOutline,searchOutline});
   }
 
   ngOnInit(): void {
+    void this.loadDashboardRoute();
     void this.loadProducts();
+  }
+
+  // RESOLVE ROLE-BASED DASHBOARD ROUTE
+  private async loadDashboardRoute(): Promise<void> {
+    try {
+      const currentUser = await this.auth.getCurrentUser();
+
+      if (currentUser?.role === 'staff') {
+        this.dashboardRoute.set('/staff');
+      } else if (currentUser?.role === 'patient') {
+        this.dashboardRoute.set('/patient');
+      } else {
+        this.dashboardRoute.set('/owner');
+      }
+
+    } catch {
+      this.dashboardRoute.set('/owner');
+    }
+  }
+
+  // =====================================
+  // REMOVE FOCUS BEFORE NAVIGATING AWAY
+  // Prevents "Blocked aria-hidden on an
+  // element because its descendant
+  // retained focus" console warnings when
+  // this page is hidden mid-transition.
+  // Uses activeElement because ion-button's
+  // real focusable element lives inside its
+  // shadow DOM (button-native), not on the
+  // click event's retargeted target.
+  // =====================================
+
+  blurActiveElement(): void {
+    const active = document.activeElement as HTMLElement | null;
+    active?.blur();
   }
 
   // LOAD INVENTORY PRODUCTS

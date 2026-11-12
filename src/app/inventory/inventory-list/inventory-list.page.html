@@ -1,18 +1,23 @@
-
 <ion-header>
   <ion-toolbar color="primary">
+
+    <ion-buttons slot="start">
+      <ion-button
+        [routerLink]="dashboardRoute()"
+        (click)="blurActiveElement()"
+        class="back-button"
+        aria-label="Back to Dashboard">
+        <ion-icon
+          slot="icon-only"
+          name="arrow-back-outline">
+        </ion-icon>
+      </ion-button>
+    </ion-buttons>
+
     <ion-title>
       Inventory Management
     </ion-title>
 
-    <ion-buttons slot="end">
-      <ion-button (click)="refresh()">
-        <ion-icon
-          slot="icon-only"
-          name="refresh-outline">
-        </ion-icon>
-      </ion-button>
-    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
@@ -32,7 +37,9 @@
       </div>
 
       <!-- ADD PRODUCT BUTTON -->
-      <ion-button routerLink="/inventory/new">
+      <ion-button
+        routerLink="/inventory/new"
+        (click)="blurActiveElement()">
         <ion-icon
           slot="start"
           name="add-outline">
@@ -238,7 +245,8 @@
                 '/inventory',
                 product.id,
                 'edit'
-              ]">
+              ]"
+              (click)="blurActiveElement()">
 
               <ion-icon
                 slot="start"

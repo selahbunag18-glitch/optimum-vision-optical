@@ -1,4 +1,3 @@
-
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 
@@ -16,6 +15,7 @@ import {
   IonToolbar,
   RefresherCustomEvent,
   SearchbarCustomEvent,
+  ViewWillLeave,
 } from '@ionic/angular';
 
 import { addIcons } from 'ionicons';
@@ -64,7 +64,7 @@ const PAGE_SIZE = 20;
     IonRefresherContent,
   ],
 })
-export class PatientListPage implements OnInit {
+export class PatientListPage implements OnInit, ViewWillLeave {
   private readonly patientsApi = inject(PatientService);
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
@@ -101,6 +101,11 @@ export class PatientListPage implements OnInit {
     }
 
     await this.fetch(1);
+  }
+
+  // Alisin ang focus bago umalis para mawala ang aria-hidden warning
+  ionViewWillLeave(): void {
+    (document.activeElement as HTMLElement | null)?.blur();
   }
 
   hasMore(): boolean {

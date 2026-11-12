@@ -1,4 +1,3 @@
-
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
@@ -8,6 +7,7 @@ import {
   IonHeader,
   IonToolbar,
   IonTitle,
+  IonButtons,
   IonContent,
   IonButton,
   IonIcon,
@@ -30,6 +30,7 @@ import {
 } from 'ionicons/icons';
 
 import { ApiService } from '../../core/services/api.service';
+import { AuthService } from '../../core/services/auth.service';
 
 type BatchFilter =
   | 'new_arrivals'
@@ -93,6 +94,7 @@ interface ExpirationResponse {
     IonHeader,
     IonToolbar,
     IonTitle,
+    IonButtons,
     IonContent,
     IonButton,
     IonIcon,
@@ -106,6 +108,7 @@ interface ExpirationResponse {
 export class InventoryBatchesPage implements OnInit {
 
   private readonly api = inject(ApiService);
+  private readonly auth = inject(AuthService);
 
   // =====================================
   // PAGE STATE
@@ -117,6 +120,12 @@ export class InventoryBatchesPage implements OnInit {
 
   readonly selectedFilter =
     signal<BatchFilter>('new_arrivals');
+
+  // =====================================
+  // DASHBOARD ROUTE (role-based)
+  // =====================================
+
+  readonly dashboardRoute = signal('/owner');
 
   // =====================================
   // EXPIRATION PROCESSING STATE
@@ -170,7 +179,44 @@ export class InventoryBatchesPage implements OnInit {
   // =====================================
 
   ngOnInit(): void {
+    void this.loadDashboardRoute();
     void this.loadBatches();
+  }
+
+  // =====================================
+  // RESOLVE ROLE-BASED DASHBOARD ROUTE
+  // =====================================
+
+  private async loadDashboardRoute(): Promise<void> {
+    try {
+      const currentUser = await this.auth.getCurrentUser();
+
+      if (currentUser?.role === 'staff') {
+        this.dashboardRoute.set('/staff');
+      } else if (currentUser?.role === 'patient') {
+        this.dashboardRoute.set('/patient');
+      } else {
+        this.dashboardRoute.set('/owner');
+      }
+
+    } catch {
+      this.dashboardRoute.set('/owner');
+    }
+  }
+
+  // =====================================
+  // REMOVE FOCUS BEFORE NAVIGATING AWAY
+  // Prevents "Blocked aria-hidden on an
+  // element because its descendant
+  // retained focus" console warnings.
+  // Uses activeElement because ion-button's
+  // real focusable element lives inside its
+  // shadow DOM (button-native).
+  // =====================================
+
+  blurActiveElement(): void {
+    const active = document.activeElement as HTMLElement | null;
+    active?.blur();
   }
 
   // =====================================

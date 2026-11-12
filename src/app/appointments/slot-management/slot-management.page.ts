@@ -1,4 +1,3 @@
-
 import {
   Component,
   inject,
@@ -162,6 +161,11 @@ export class SlotManagementPage {
 
   ionViewWillEnter(): void {
     void this.loadSlots();
+  }
+
+  // Alisin ang focus bago umalis para mawala ang aria-hidden warning
+  ionViewWillLeave(): void {
+    (document.activeElement as HTMLElement | null)?.blur();
   }
 
   // CURRENT DATE

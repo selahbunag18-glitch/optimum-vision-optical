@@ -1,5 +1,19 @@
 <ion-header>
   <ion-toolbar color="primary">
+
+    <!-- BACK TO DASHBOARD -->
+    <ion-buttons slot="start">
+      <ion-button
+        (click)="goBack()"
+        aria-label="Back to dashboard"
+      >
+        <ion-icon
+          slot="icon-only"
+          name="arrow-back-outline"
+        ></ion-icon>
+      </ion-button>
+    </ion-buttons>
+
     <ion-title>Sales Management</ion-title>
   </ion-toolbar>
 </ion-header>
@@ -21,20 +35,21 @@
           *ngIf="isOwner()"
           routerLink="/sales/reports"
           color="primary"
-          fill="outline">
-          <ion-icon slot="start" name="stats-chart-outline"></ion-icon>
+          fill="outline"
+        >
+          <ion-icon
+            slot="start"
+            name="stats-chart-outline"
+          ></ion-icon>
           Sales Reports
-        </ion-button>
-
-        <!-- INVENTORY -->
-        <ion-button fill="outline" routerLink="/inventory">
-          <ion-icon slot="start" name="arrow-back-outline"></ion-icon>
-          Inventory
         </ion-button>
 
         <!-- NEW SALE -->
         <ion-button routerLink="/sales/create">
-          <ion-icon slot="start" name="add-outline"></ion-icon>
+          <ion-icon
+            slot="start"
+            name="add-outline"
+          ></ion-icon>
           New Sale
         </ion-button>
 
@@ -44,6 +59,7 @@
     <!-- SALES SUMMARY -->
     <ion-card class="summary-card">
       <ion-card-content class="summary-content">
+
         <ion-icon name="receipt-outline"></ion-icon>
 
         <div>
@@ -51,13 +67,6 @@
           <p>Total Sales Records</p>
         </div>
 
-        <ion-button
-          fill="clear"
-          [disabled]="loading()"
-          (click)="loadSales()">
-          <ion-icon slot="start" name="refresh-outline"></ion-icon>
-          Refresh
-        </ion-button>
       </ion-card-content>
     </ion-card>
 
@@ -68,10 +77,18 @@
     </div>
 
     <!-- ERROR -->
-    <div class="state error" *ngIf="errorMessage()">
+    <div
+      class="state error"
+      *ngIf="errorMessage()"
+    >
       <ion-icon name="alert-circle-outline"></ion-icon>
+
       <p>{{ errorMessage() }}</p>
-      <ion-button fill="outline" (click)="loadSales()">
+
+      <ion-button
+        fill="outline"
+        (click)="loadSales()"
+      >
         Try Again
       </ion-button>
     </div>
@@ -79,24 +96,36 @@
     <!-- SALES LIST -->
     <div
       class="sales-grid"
-      *ngIf="!loading() && !errorMessage()">
+      *ngIf="!loading() && !errorMessage()"
+    >
 
-      <ion-card class="sale-card" *ngFor="let sale of sales()">
+      <ion-card
+        class="sale-card"
+        *ngFor="let sale of sales()"
+      >
         <ion-card-content>
 
+          <!-- SALE HEADING -->
           <div class="sale-heading">
             <div>
               <h2>Sale #{{ sale.id }}</h2>
               <p>{{ formatDate(sale.sale_date) }}</p>
             </div>
 
-            <ion-chip [color]="statusColor(sale.status)">
+            <ion-chip
+              [color]="statusColor(sale.status)"
+            >
               {{ sale.status }}
             </ion-chip>
           </div>
 
+          <!-- SALE DETAILS -->
           <div class="sale-details">
-            <p><strong>Items:</strong> {{ sale.item_count }}</p>
+
+            <p>
+              <strong>Items:</strong>
+              {{ sale.item_count }}
+            </p>
 
             <p>
               <strong>Customer:</strong>
@@ -122,14 +151,19 @@
               <strong>Balance:</strong>
               {{ money(sale.balance) }}
             </p>
+
           </div>
 
+          <!-- PAYMENT STATUS -->
           <div class="sale-footer">
-            <ion-chip [color]="statusColor(sale.payment_status)">
+            <ion-chip
+              [color]="statusColor(sale.payment_status)"
+            >
               {{ sale.payment_status }}
             </ion-chip>
           </div>
 
+          <!-- SALE ACTIONS -->
           <div class="sale-actions">
 
             <!-- VIEW DETAILS -->
@@ -137,8 +171,12 @@
               fill="outline"
               size="small"
               [disabled]="detailsLoading() || processingSaleId() !== null"
-              (click)="viewDetails(sale)">
-              <ion-icon slot="start" name="eye-outline"></ion-icon>
+              (click)="viewDetails(sale)"
+            >
+              <ion-icon
+                slot="start"
+                name="eye-outline"
+              ></ion-icon>
               View Details
             </ion-button>
 
@@ -149,8 +187,12 @@
               size="small"
               *ngIf="canRecordPayment(sale)"
               [disabled]="savingPayment() || processingSaleId() !== null"
-              (click)="openPayment(sale)">
-              <ion-icon slot="start" name="cash-outline"></ion-icon>
+              (click)="openPayment(sale)"
+            >
+              <ion-icon
+                slot="start"
+                name="cash-outline"
+              ></ion-icon>
               Record Payment
             </ion-button>
 
@@ -161,22 +203,35 @@
               size="small"
               *ngIf="canCancel(sale)"
               [disabled]="processingSaleId() !== null || savingPayment()"
-              (click)="cancelSale(sale)">
-              <ion-icon slot="start" name="close-circle-outline"></ion-icon>
-              {{ processingSaleId() === sale.id ? 'Cancelling...' : 'Cancel Sale' }}
+              (click)="cancelSale(sale)"
+            >
+              <ion-icon
+                slot="start"
+                name="close-circle-outline"
+              ></ion-icon>
+
+              {{
+                processingSaleId() === sale.id
+                  ? 'Cancelling...'
+                  : 'Cancel Sale'
+              }}
+
             </ion-button>
 
           </div>
 
         </ion-card-content>
       </ion-card>
+
     </div>
 
     <!-- EMPTY STATE -->
     <div
       class="state"
-      *ngIf="!loading() && !errorMessage() && sales().length === 0">
+      *ngIf="!loading() && !errorMessage() && sales().length === 0"
+    >
       <ion-icon name="receipt-outline"></ion-icon>
+
       <h2>No Sales Found</h2>
       <p>Create your first sales transaction.</p>
 
@@ -186,73 +241,146 @@
     </div>
 
     <!-- PAGINATION -->
-    <div class="pagination" *ngIf="!loading() && totalPages() > 1">
+    <div
+      class="pagination"
+      *ngIf="!loading() && totalPages() > 1"
+    >
       <ion-button
         fill="outline"
         [disabled]="currentPage() === 1"
-        (click)="changePage(currentPage() - 1)">
+        (click)="changePage(currentPage() - 1)"
+      >
         Previous
       </ion-button>
 
-      <span>Page {{ currentPage() }} of {{ totalPages() }}</span>
+      <span>
+        Page {{ currentPage() }} of {{ totalPages() }}
+      </span>
 
       <ion-button
         fill="outline"
         [disabled]="currentPage() === totalPages()"
-        (click)="changePage(currentPage() + 1)">
+        (click)="changePage(currentPage() + 1)"
+      >
         Next
       </ion-button>
     </div>
 
-    <!-- SALE DETAILS MODAL -->
-    <div class="details-overlay" *ngIf="selectedSale() as detail">
+    <!-- =====================================
+         SALE DETAILS MODAL
+    ===================================== -->
+    <div
+      class="details-overlay"
+      *ngIf="selectedSale() as detail"
+    >
       <div class="details-panel">
 
+        <!-- MODAL HEADER -->
         <div class="details-header">
+
           <h2>Sale #{{ detail.id }} Details</h2>
 
-          <ion-button fill="clear" (click)="closeDetails()">
+          <ion-button
+            fill="clear"
+            (click)="closeDetails()"
+          >
             Close
           </ion-button>
+
         </div>
 
+        <!-- MODAL BODY -->
         <div class="details-body">
-          <p><strong>Status:</strong> {{ detail.status }}</p>
-          <p><strong>Payment:</strong> {{ detail.payment_status }}</p>
-          <p><strong>Date:</strong> {{ formatDate(detail.sale_date) }}</p>
-          <p><strong>Total:</strong> {{ money(detail.total_amount) }}</p>
-          <p><strong>Paid:</strong> {{ money(detail.amount_paid) }}</p>
-          <p><strong>Balance:</strong> {{ money(detail.balance) }}</p>
 
-          <p *ngIf="detail.notes">
-            <strong>Notes:</strong> {{ detail.notes }}
+          <p>
+            <strong>Status:</strong>
+            {{ detail.status }}
           </p>
 
+          <p>
+            <strong>Payment:</strong>
+            {{ detail.payment_status }}
+          </p>
+
+          <p>
+            <strong>Date:</strong>
+            {{ formatDate(detail.sale_date) }}
+          </p>
+
+          <p>
+            <strong>Total:</strong>
+            {{ money(detail.total_amount) }}
+          </p>
+
+          <p>
+            <strong>Paid:</strong>
+            {{ money(detail.amount_paid) }}
+          </p>
+
+          <p>
+            <strong>Balance:</strong>
+            {{ money(detail.balance) }}
+          </p>
+
+          <p *ngIf="detail.notes">
+            <strong>Notes:</strong>
+            {{ detail.notes }}
+          </p>
+
+          <!-- PRODUCTS -->
           <h3>Products</h3>
 
-          <div *ngIf="!detail.items?.length">
+          <!-- NG8107 FIXED -->
+          <div *ngIf="!detail.items.length">
             No product details available.
           </div>
 
-          <div class="detail-item" *ngFor="let item of detail.items">
-            <strong>{{ item.product_name }}</strong>
-            <p>Quantity: {{ item.quantity }}</p>
-            <p>Unit Price: {{ money(item.unit_price) }}</p>
-            <p>Subtotal: {{ money(item.subtotal) }}</p>
+          <div
+            class="detail-item"
+            *ngFor="let item of detail.items"
+          >
+            <strong>
+              {{ item.product_name }}
+            </strong>
+
+            <p>
+              Quantity: {{ item.quantity }}
+            </p>
+
+            <p>
+              Unit Price: {{ money(item.unit_price) }}
+            </p>
+
+            <p>
+              Subtotal: {{ money(item.subtotal) }}
+            </p>
           </div>
 
+          <!-- PAYMENT HISTORY -->
           <h3>Payment History</h3>
 
-          <div *ngIf="!detail.payments?.length">
+          <!-- NG8107 FIXED -->
+          <div *ngIf="!detail.payments.length">
             No payments recorded.
           </div>
 
-          <div class="detail-item" *ngFor="let payment of detail.payments">
-            <p><strong>Amount:</strong> {{ money(payment.amount) }}</p>
-            <p><strong>Method:</strong> {{ payment.payment_method }}</p>
+          <div
+            class="detail-item"
+            *ngFor="let payment of detail.payments"
+          >
+            <p>
+              <strong>Amount:</strong>
+              {{ money(payment.amount) }}
+            </p>
+
+            <p>
+              <strong>Method:</strong>
+              {{ payment.payment_method }}
+            </p>
 
             <p *ngIf="payment.reference_number">
-              <strong>Reference:</strong> {{ payment.reference_number }}
+              <strong>Reference:</strong>
+              {{ payment.reference_number }}
             </p>
 
             <p>
@@ -261,7 +389,8 @@
             </p>
 
             <p *ngIf="payment.notes">
-              <strong>Notes:</strong> {{ payment.notes }}
+              <strong>Notes:</strong>
+              {{ payment.notes }}
             </p>
           </div>
 
@@ -270,8 +399,12 @@
             expand="block"
             color="success"
             *ngIf="canRecordPayment(detail)"
-            (click)="closeDetails(); openPayment(detail)">
-            <ion-icon slot="start" name="cash-outline"></ion-icon>
+            (click)="closeDetails(); openPayment(detail)"
+          >
+            <ion-icon
+              slot="start"
+              name="cash-outline"
+            ></ion-icon>
             Record Payment
           </ion-button>
 
@@ -280,54 +413,93 @@
             expand="block"
             color="primary"
             fill="outline"
-            (click)="printReceipt()">
-            <ion-icon slot="start" name="receipt-outline"></ion-icon>
+            (click)="printReceipt()"
+          >
+            <ion-icon
+              slot="start"
+              name="receipt-outline"
+            ></ion-icon>
             Print Receipt
           </ion-button>
-        </div>
 
+        </div>
       </div>
     </div>
 
-    <!-- RECORD PAYMENT MODAL -->
-    <div class="details-overlay" *ngIf="paymentSale() as sale">
+    <!-- =====================================
+         RECORD PAYMENT MODAL
+    ===================================== -->
+    <div
+      class="details-overlay"
+      *ngIf="paymentSale() as sale"
+    >
       <div class="details-panel payment-panel">
 
+        <!-- MODAL HEADER -->
         <div class="details-header">
+
           <h2>Record Payment</h2>
 
           <ion-button
             fill="clear"
             [disabled]="savingPayment()"
-            (click)="closePayment()">
+            (click)="closePayment()"
+          >
             Close
           </ion-button>
+
         </div>
 
+        <!-- PAYMENT SUMMARY -->
         <div class="payment-summary">
+
           <h3>Sale #{{ sale.id }}</h3>
-          <p>Total: {{ money(sale.total_amount) }}</p>
-          <p>Already Paid: {{ money(sale.amount_paid) }}</p>
-          <h2>Balance: {{ money(sale.balance) }}</h2>
+
+          <p>
+            Total: {{ money(sale.total_amount) }}
+          </p>
+
+          <p>
+            Already Paid: {{ money(sale.amount_paid) }}
+          </p>
+
+          <h2>
+            Balance: {{ money(sale.balance) }}
+          </h2>
+
         </div>
 
-        <form (ngSubmit)="recordPayment()" class="payment-form">
+        <!-- PAYMENT FORM -->
+        <form
+          (ngSubmit)="recordPayment()"
+          class="payment-form"
+        >
 
-          <label for="payment-method">Payment Method</label>
+          <!-- PAYMENT METHOD -->
+          <label for="payment-method">
+            Payment Method
+          </label>
+
           <select
             id="payment-method"
             name="paymentMethod"
             [(ngModel)]="paymentMethod"
             [disabled]="savingPayment()"
-            required>
+            required
+          >
             <option
               *ngFor="let method of paymentMethods"
-              [value]="method">
+              [value]="method"
+            >
               {{ method }}
             </option>
           </select>
 
-          <label for="payment-amount">Payment Amount (₱)</label>
+          <!-- PAYMENT AMOUNT -->
+          <label for="payment-amount">
+            Payment Amount (₱)
+          </label>
+
           <input
             id="payment-amount"
             type="number"
@@ -337,11 +509,16 @@
             min="0.01"
             step="0.01"
             [max]="sale.balance"
-            required />
+            required
+          />
 
+          <!-- REFERENCE NUMBER -->
           <label for="payment-reference">
             Reference Number
-            <span *ngIf="paymentMethod === 'Cash'">(Optional)</span>
+
+            <span *ngIf="paymentMethod === 'Cash'">
+              (Optional)
+            </span>
           </label>
 
           <input
@@ -351,9 +528,13 @@
             [(ngModel)]="paymentReference"
             [disabled]="savingPayment()"
             maxlength="100"
-            placeholder="Enter transaction reference" />
+            placeholder="Enter transaction reference"
+          />
 
-          <label for="payment-notes">Notes (Optional)</label>
+          <!-- PAYMENT NOTES -->
+          <label for="payment-notes">
+            Notes (Optional)
+          </label>
 
           <textarea
             id="payment-notes"
@@ -362,35 +543,51 @@
             [disabled]="savingPayment()"
             maxlength="255"
             rows="3"
-            placeholder="Additional payment notes">
-          </textarea>
+            placeholder="Additional payment notes"
+          ></textarea>
 
-          <p class="payment-error" *ngIf="paymentError()">
+          <!-- PAYMENT ERROR -->
+          <p
+            class="payment-error"
+            *ngIf="paymentError()"
+          >
             {{ paymentError() }}
           </p>
 
+          <!-- PAYMENT ACTIONS -->
           <div class="payment-actions">
+
+            <!-- CANCEL -->
             <ion-button
               type="button"
               fill="outline"
               color="medium"
               [disabled]="savingPayment()"
-              (click)="closePayment()">
+              (click)="closePayment()"
+            >
               Cancel
             </ion-button>
 
+            <!-- SAVE PAYMENT -->
             <ion-button
               type="submit"
               color="success"
-              [disabled]="savingPayment()">
+              [disabled]="savingPayment()"
+            >
               <ion-spinner
                 *ngIf="savingPayment()"
                 name="crescent"
-                slot="start">
-              </ion-spinner>
+                slot="start"
+              ></ion-spinner>
 
-              {{ savingPayment() ? 'Saving...' : 'Save Payment' }}
+              {{
+                savingPayment()
+                  ? 'Saving...'
+                  : 'Save Payment'
+              }}
+
             </ion-button>
+
           </div>
 
         </form>

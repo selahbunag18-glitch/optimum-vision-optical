@@ -1,9 +1,10 @@
-
 <ion-header class="ion-no-border">
-  <ion-toolbar>
+  <ion-toolbar class="app-toolbar">
     <ion-buttons slot="start">
       <ion-button
+        class="back-btn"
         routerLink="/appointments"
+        routerDirection="back"
         aria-label="Back to appointments"
       >
         <ion-icon
@@ -14,19 +15,6 @@
     </ion-buttons>
 
     <ion-title>Appointment Details</ion-title>
-
-    <ion-buttons slot="end">
-      <ion-button
-        aria-label="Refresh appointment"
-        [disabled]="loading() || saving()"
-        (click)="loadAppointment()"
-      >
-        <ion-icon
-          slot="icon-only"
-          name="refresh-outline"
-        ></ion-icon>
-      </ion-button>
-    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
@@ -252,20 +240,6 @@
         </div>
       </section>
 
-      <!-- Navigation -->
-      <div class="bottom-actions">
-        <ion-button
-          fill="outline"
-          routerLink="/appointments"
-          [disabled]="saving()"
-        >
-          <ion-icon
-            slot="start"
-            name="arrow-back-outline"
-          ></ion-icon>
-          Back to Appointments
-        </ion-button>
-      </div>
 
     } @else {
 
@@ -283,6 +257,7 @@
         <ion-button
           fill="outline"
           routerLink="/appointments"
+          routerDirection="back"
         >
           Back to Appointments
         </ion-button>

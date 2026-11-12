@@ -1,388 +1,178 @@
-
 <ion-header class="ion-no-border">
+
   <ion-toolbar class="dashboard-toolbar">
 
-    <!-- CLINIC BRAND -->
+    <!-- LOGO AND CLINIC NAME -->
     <ion-title>
-      <span class="brand-name">
-        OPTIMUM VISION
-      </span>
-      <span class="brand-subtitle">
-        OPTICAL CLINIC
-      </span>
-    </ion-title>
 
-    <!-- RIGHT SIDE CONTROLS -->
-    <ion-buttons slot="end">
-
-      <!-- LOGOUT BUTTON -->
-      <ion-button
-        class="desktop-logout-button"
-        [disabled]="loggingOut()"
-        (click)="logout()">
+      <div class="brand">
 
         <ion-icon
-          slot="start"
-          name="log-out-outline">
+          name="eye-outline"
+          class="brand-logo">
         </ion-icon>
 
-        Logout
-      </ion-button>
+        <span>Optimum Vision Optical</span>
 
-      <!-- SIDEBAR MENU - OWNER / STAFF ONLY -->
-      @if (!isPatient) {
-        <ion-menu-button
-          class="dashboard-menu-button"
-          menu="clinic-menu"
-          aria-label="Open navigation menu">
-        </ion-menu-button>
+      </div>
+
+    </ion-title>
+
+    <ion-buttons slot="end" class="navbar-actions">
+
+      @if (!loading() && user()) {
+
+        <!-- HAMBURGER MENU (profile and log out are inside) -->
+        <ion-button
+          class="mobile-menu-button"
+          fill="clear"
+          [attr.aria-expanded]="menuOpen()"
+          aria-label="Account menu"
+          (click)="toggleMenu()">
+
+          <ion-icon
+            slot="icon-only"
+            [name]="menuOpen() ? 'close-outline' : 'menu-outline'">
+          </ion-icon>
+
+        </ion-button>
+
       }
 
     </ion-buttons>
 
   </ion-toolbar>
+
 </ion-header>
 
 <ion-content class="dashboard-content">
 
-  <!-- LOADING -->
   @if (loading()) {
 
     <div class="loading-state">
+
       <ion-spinner name="crescent"></ion-spinner>
+
       <p>Loading dashboard...</p>
+
     </div>
 
   } @else if (user(); as currentUser) {
 
-    <div class="dashboard-layout">
+    <!-- ACCOUNT MENU -->
+    @if (menuOpen()) {
 
-      <!-- =====================================
-           PATIENT DASHBOARD
-      ===================================== -->
+      <div
+        class="menu-backdrop"
+        (click)="closeMenu()">
+      </div>
 
-      @if (isPatient) {
+      <section
+        class="mobile-account-menu"
+        aria-label="Account information">
 
-        <!-- PATIENT WELCOME -->
-        <section class="welcome-section patient-welcome">
+        <div class="account-details">
 
-          <div>
-            <p class="eyebrow">
-              PATIENT PORTAL
-            </p>
+          <div class="account-avatar">
 
-            <h1>
-              Welcome back, {{ currentUser.full_name }}!
-            </h1>
+            <ion-icon name="person-circle-outline"></ion-icon>
 
-            <p class="welcome-description">
-              Your eye care journey starts here.
-              Book your appointment and explore
-              our clinic services.
-            </p>
-
-            <a
-              class="patient-book-button"
-              routerLink="/appointments/book">
-
-              <ion-icon name="calendar-outline"></ion-icon>
-
-              Book Appointment
-
-              <ion-icon
-                name="chevron-forward-outline">
-              </ion-icon>
-            </a>
           </div>
 
-          <div class="patient-welcome-icon">
-            <ion-icon name="eye-outline"></ion-icon>
+          <div class="account-info">
+
+            <h2>{{ fullName }}</h2>
+
+            <p>{{ roleLabel }}</p>
+
           </div>
 
-        </section>
+        </div>
 
-        <!-- PATIENT ACCOUNT SUMMARY -->
-        <section class="user-summary">
+        <div class="menu-divider"></div>
 
-          <div class="user-avatar">
-            <ion-icon
-              name="person-circle-outline">
-            </ion-icon>
-          </div>
+        <ion-button
+          class="menu-logout"
+          fill="clear"
+          expand="block"
+          [disabled]="loggingOut()"
+          (click)="logout()">
 
-          <div>
-            <h2>{{ currentUser.full_name }}</h2>
-            <p>{{ currentUser.email }}</p>
-          </div>
+          <ion-icon
+            slot="start"
+            name="log-out-outline">
+          </ion-icon>
 
-          <span class="role-badge">
-            Patient Account
-          </span>
+          {{ loggingOut() ? 'Logging out...' : 'Log Out' }}
 
-        </section>
+        </ion-button>
 
-        <!-- PATIENT SERVICES -->
-        <section class="dashboard-section">
+      </section>
 
-          <div class="section-heading">
-            <div>
-              <h2>What would you like to do?</h2>
-              <p>
-                Choose a patient service to get started.
-              </p>
-            </div>
-          </div>
+    }
 
-          <div class="patient-modules-grid">
+    @if (!isPatient) {
 
-            @for (
-              module of patientModules;
-              track module.title
-            ) {
+      <!-- OWNER / STAFF DASHBOARD -->
+      <main class="staff-dashboard">
 
-              <!-- COMING SOON MODULES -->
-              @if (module.comingSoon) {
+        <div class="dashboard-body">
 
-                <div
-                  class="module-card patient-module-card coming-soon">
+          <!-- DESKTOP QUICK ACTIONS -->
+          <section
+            class="quick-actions"
+            aria-label="Quick Actions">
 
-                  <div class="module-icon">
-                    <ion-icon
-                      [name]="module.icon">
-                    </ion-icon>
-                  </div>
+            @for (action of quickActions; track action.title) {
 
-                  <div class="module-information">
-                    <h3>{{ module.title }}</h3>
-                    <p>{{ module.description }}</p>
-                  </div>
+              <a
+                class="quick-action"
+                [routerLink]="action.route!"
+                (click)="blurLink($event)">
 
-                  <span class="module-link">
-                    Coming soon
-                  </span>
+                <ion-icon [name]="action.icon"></ion-icon>
+
+                <div class="quick-action-info">
+
+                  <strong>{{ action.title }}</strong>
+
+                  <small>{{ action.description }}</small>
 
                 </div>
 
-              } @else {
-
-                <!-- ACTIVE PATIENT MODULES -->
-                <a
-                  class="module-card patient-module-card"
-                  [routerLink]="module.route!">
-
-                  <div class="module-icon">
-                    <ion-icon
-                      [name]="module.icon">
-                    </ion-icon>
-                  </div>
-
-                  <div class="module-information">
-                    <h3>{{ module.title }}</h3>
-                    <p>{{ module.description }}</p>
-                  </div>
-
-                  <span class="module-link">
-
-                    @if (module.title === 'My Profile') {
-                      View Profile
-                    } @else {
-                      Open Service
-                    }
-
-                  </span>
-
-                </a>
-
-              }
+              </a>
 
             }
 
-          </div>
-        </section>
+          </section>
 
-        <!-- EYE CARE INFORMATION -->
-        <section class="dashboard-section">
+          <!-- DESKTOP MANAGEMENT -->
+          <section
+            class="management-grid"
+            aria-label="Management Modules">
 
-          <div class="patient-info-card">
-
-            <div class="patient-info-icon">
-              <ion-icon
-                name="information-circle-outline">
-              </ion-icon>
-            </div>
-
-            <div>
-              <h3>Taking care of your vision</h3>
-
-              <p>
-                Regular eye examinations can help
-                monitor your eye health.
-                Schedule an appointment whenever
-                you need an eye consultation.
-              </p>
-            </div>
-
-          </div>
-        </section>
-
-      } @else {
-
-        <!-- =====================================
-             OWNER / STAFF DASHBOARD
-        ===================================== -->
-
-        <!-- WELCOME SECTION -->
-        <section class="welcome-section">
-
-          <div>
-            <p class="eyebrow">
-              CLINIC MANAGEMENT SYSTEM
-            </p>
-
-            <h1>{{ dashboardTitle }}</h1>
-
-            <p class="welcome-text">
-              Welcome back,
-              <strong>
-                {{ currentUser.full_name }}
-              </strong>!
-            </p>
-
-            <p class="welcome-description">
-              Manage your clinic operations
-              from one place.
-            </p>
-          </div>
-
-          <div class="welcome-date">
-            <ion-icon name="calendar-outline"></ion-icon>
-            {{ today }}
-          </div>
-
-        </section>
-
-        <!-- OWNER / STAFF ACCOUNT -->
-        <section class="user-summary">
-
-          <div class="user-avatar">
-            <ion-icon
-              name="person-circle-outline">
-            </ion-icon>
-          </div>
-
-          <div>
-            <h2>{{ currentUser.full_name }}</h2>
-            <p>{{ currentUser.email }}</p>
-          </div>
-
-          <span class="role-badge">
-            {{
-              currentUser.role === 'owner'
-                ? 'Clinic Owner'
-                : 'Clinic Staff'
-            }}
-          </span>
-
-        </section>
-
-        <!-- QUICK ACTIONS -->
-        <section class="dashboard-section">
-
-          <div class="section-heading">
-            <div>
-              <h2>Quick Actions</h2>
-              <p>
-                Frequently used clinic operations.
-              </p>
-            </div>
-          </div>
-
-          <div class="quick-actions">
-
-            <a
-              class="quick-action"
-              routerLink="/patients/new">
-
-              <ion-icon
-                name="add-circle-outline">
-              </ion-icon>
-
-              <span>Add Patient</span>
-            </a>
-
-            <a
-              class="quick-action"
-              routerLink="/appointments">
-
-              <ion-icon
-                name="calendar-outline">
-              </ion-icon>
-
-              <span>Appointments</span>
-            </a>
-
-            <a
-              class="quick-action"
-              routerLink="/sales/create">
-
-              <ion-icon
-                name="cart-outline">
-              </ion-icon>
-
-              <span>New Sale</span>
-            </a>
-
-            <a
-              class="quick-action"
-              routerLink="/inventory/stock-in">
-
-              <ion-icon
-                name="cube-outline">
-              </ion-icon>
-
-              <span>Stock In</span>
-            </a>
-
-          </div>
-        </section>
-
-        <!-- MANAGEMENT MODULES -->
-        <section class="dashboard-section">
-
-          <div class="section-heading">
-            <div>
-              <h2>Management Modules</h2>
-
-              <p>
-                Access the clinic's existing
-                management features.
-              </p>
-            </div>
-          </div>
-
-          <div class="modules-grid">
-
-            @for (
-              module of visibleModules;
-              track module.title
-            ) {
+            @for (module of modules; track module.title) {
 
               <a
-                class="module-card"
-                [routerLink]="module.route!">
+                class="management-card"
+                [routerLink]="module.route!"
+                (click)="blurLink($event)">
 
-                <div class="module-icon">
-                  <ion-icon
-                    [name]="module.icon">
-                  </ion-icon>
+                <div class="management-icon">
+
+                  <ion-icon [name]="module.icon"></ion-icon>
+
                 </div>
 
-                <div class="module-information">
-                  <h3>{{ module.title }}</h3>
+                <div class="management-info">
+
+                  <h2>{{ module.title }}</h2>
+
                   <p>{{ module.description }}</p>
+
                 </div>
 
-                <span class="module-link">
+                <span class="open-module">
                   Open Module
                 </span>
 
@@ -390,86 +180,117 @@
 
             }
 
-          </div>
+          </section>
+
+          <!-- MOBILE COMBINED GRID -->
+          <section
+            class="mobile-staff-grid"
+            aria-label="Clinic Management">
+
+            @for (action of quickActions; track action.title) {
+
+              <a
+                class="mobile-staff-card"
+                [routerLink]="action.route!"
+                (click)="blurLink($event)">
+
+                <ion-icon
+                  class="mobile-card-icon"
+                  [name]="action.icon">
+                </ion-icon>
+
+                <h2>{{ action.title }}</h2>
+
+                <p>{{ action.description }}</p>
+
+              </a>
+
+            }
+
+            @for (module of modules; track module.title) {
+
+              <a
+                class="mobile-staff-card management-mobile-card"
+                [routerLink]="module.route!"
+                (click)="blurLink($event)">
+
+                <div class="mobile-icon-box">
+
+                  <ion-icon [name]="module.icon"></ion-icon>
+
+                </div>
+
+                <h2>{{ module.title }}</h2>
+
+                <p>{{ module.description }}</p>
+
+                <span>Open Module</span>
+
+              </a>
+
+            }
+
+          </section>
+
+        </div>
+
+        <footer class="dashboard-footer">
+          Optimum Vision Optical Clinic Management System
+        </footer>
+
+      </main>
+
+    } @else {
+
+      <!-- PATIENT DASHBOARD -->
+      <main class="patient-dashboard">
+
+        <section
+          class="patient-grid"
+          aria-label="Patient Services">
+
+          @for (module of patientModules; track module.title) {
+
+            @if (module.comingSoon) {
+
+              <div
+                class="patient-card coming-soon"
+                aria-disabled="true">
+
+                <ion-icon [name]="module.icon"></ion-icon>
+
+                <h2>{{ module.title }}</h2>
+
+                <small>Coming Soon</small>
+
+              </div>
+
+            } @else {
+
+              <a
+                class="patient-card"
+                [routerLink]="module.route!"
+                (click)="blurLink($event)">
+
+                <ion-icon [name]="module.icon"></ion-icon>
+
+                <h2>{{ module.title }}</h2>
+
+              </a>
+
+            }
+
+          }
+
         </section>
 
-        <!-- ADDITIONAL MANAGEMENT -->
-        <section class="dashboard-section">
+        <footer class="dashboard-footer patient-footer">
+          Optimum Vision Optical Clinic Management System
+        </footer>
 
-          <div class="section-heading">
-            <div>
-              <h2>Additional Management</h2>
-              <p>Other clinic management tools.</p>
-            </div>
-          </div>
+      </main>
 
-          <div class="additional-grid">
-
-            <!-- APPOINTMENT SLOTS -->
-            <a
-              class="additional-card"
-              routerLink="/appointments/slots">
-
-              <ion-icon
-                name="time-outline">
-              </ion-icon>
-
-              <div>
-                <h3>Appointment Slots</h3>
-                <p>
-                  Manage available booking schedules.
-                </p>
-              </div>
-
-            </a>
-
-            <!-- INVENTORY BATCHES -->
-            <a
-              class="additional-card"
-              routerLink="/inventory/batches">
-
-              <ion-icon
-                name="cube-outline">
-              </ion-icon>
-
-              <div>
-                <h3>Inventory Batches</h3>
-                <p>
-                  Monitor inventory batches and stock.
-                </p>
-              </div>
-
-            </a>
-
-            <!-- STOCK MONITORING -->
-            <a
-              class="additional-card"
-              routerLink="/inventory">
-
-              <ion-icon
-                name="alert-circle-outline">
-              </ion-icon>
-
-              <div>
-                <h3>Stock Monitoring</h3>
-                <p>
-                  Check product availability.
-                </p>
-              </div>
-
-            </a>
-
-          </div>
-        </section>
-
-      }
-
-      <!-- SHARED FOOTER -->
-      <footer class="dashboard-footer">
-        Optimum Vision Optical Clinic Management System
-      </footer>
-
-    </div>
+    }
 
   }
 

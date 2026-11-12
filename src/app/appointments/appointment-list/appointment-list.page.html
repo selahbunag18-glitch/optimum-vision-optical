@@ -1,20 +1,23 @@
-
 <ion-header class="ion-no-border">
-  <ion-toolbar>
+  <ion-toolbar class="app-toolbar">
+
+    <ion-buttons slot="start">
+      <ion-button
+        class="back-btn"
+        routerLink="/home"
+        routerDirection="back"
+        aria-label="Back to dashboard"
+      >
+        <ion-icon
+          slot="icon-only"
+          name="arrow-back-outline"
+        ></ion-icon>
+      </ion-button>
+    </ion-buttons>
+
     <ion-title>Appointment Management</ion-title>
 
-    <ion-button
-      slot="end"
-      fill="clear"
-      aria-label="Refresh appointments"
-      [disabled]="loading() || updatingAppointmentId() !== null"
-      (click)="loadAppointments()"
-    >
-      <ion-icon
-        slot="icon-only"
-        name="refresh-outline"
-      ></ion-icon>
-    </ion-button>
+
   </ion-toolbar>
 </ion-header>
 

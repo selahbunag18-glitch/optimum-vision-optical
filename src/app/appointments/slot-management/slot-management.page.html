@@ -1,8 +1,10 @@
-
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-button routerLink="/appointments">
+      <ion-button
+        routerLink="/home"
+        routerDirection="back"
+        aria-label="Back to dashboard">
         <ion-icon
           slot="icon-only"
           name="arrow-back-outline">
@@ -27,19 +29,6 @@
       </div>
 
       <div class="heading-actions">
-        <ion-button
-          fill="outline"
-          [disabled]="loading() || saving()"
-          (click)="loadSlots()">
-
-          <ion-icon
-            name="refresh-outline"
-            slot="start">
-          </ion-icon>
-
-          Refresh
-        </ion-button>
-
         <ion-button
           [disabled]="saving()"
           (click)="openCreateForm()">

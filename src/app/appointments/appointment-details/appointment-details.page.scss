@@ -1,4 +1,3 @@
-
 :host {
   display: block;
 
@@ -11,19 +10,40 @@
   --page-background: #f8fafc;
 }
 
-// Header
-ion-toolbar {
-  --background: #ffffff;
-  --color: #1e293b;
-  --border-color: #e2e8f0;
+// -----------------------------------------
+// TOOLBAR (navy header + teal back button)
+// -----------------------------------------
+
+ion-toolbar.app-toolbar {
+  --background: #0f2a44;
+  --color: #ffffff;
+  --border-width: 0;
+  --padding-start: 8px;
+  --padding-end: 8px;
+  --min-height: 70px;
 
   ion-title {
-    font-size: 18px;
+    color: #ffffff;
+    font-size: 20px;
     font-weight: 700;
   }
 
-  ion-button {
-    --color: #334155;
+  .back-btn {
+    --background: #0e8f9b;
+    --background-hover: #0b7882;
+    --background-activated: #0b7882;
+    --color: #ffffff;
+    --border-radius: 50%;
+    --padding-start: 0;
+    --padding-end: 0;
+
+    width: 48px;
+    height: 48px;
+    margin: 0 6px;
+
+    ion-icon {
+      font-size: 24px;
+    }
   }
 }
 
@@ -236,20 +256,6 @@ ion-content {
   }
 }
 
-// Bottom navigation
-.bottom-actions {
-  display: flex;
-  justify-content: flex-start;
-  margin-top: 10px;
-
-  ion-button {
-    --border-radius: 10px;
-    min-height: 44px;
-    text-transform: none;
-    font-weight: 600;
-  }
-}
-
 // Error banner
 .error-banner {
   display: flex;
@@ -356,6 +362,10 @@ ion-content {
 
 // Mobile
 @media (max-width: 480px) {
+  ion-toolbar.app-toolbar ion-title {
+    font-size: 17px;
+  }
+
   .page-container {
     padding: 18px 12px 32px;
   }
@@ -436,12 +446,6 @@ ion-content {
   }
 
   .notes-actions {
-    ion-button {
-      width: 100%;
-    }
-  }
-
-  .bottom-actions {
     ion-button {
       width: 100%;
     }

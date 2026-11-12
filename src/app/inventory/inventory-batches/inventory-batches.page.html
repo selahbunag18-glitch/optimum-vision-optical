@@ -1,7 +1,20 @@
-
 <ion-header>
   <ion-toolbar color="primary">
-    <ion-title>Inventory Batch Monitoring</ion-title>
+
+    <ion-buttons slot="start">
+      <ion-button
+        [routerLink]="dashboardRoute()"
+        (click)="blurActiveElement()"
+        class="back-button"
+        aria-label="Back to Dashboard">
+        <ion-icon
+          slot="icon-only"
+          name="arrow-back-outline">
+        </ion-icon>
+      </ion-button>
+    </ion-buttons>
+
+    <ion-title>Inventory Monitoring</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -12,7 +25,7 @@
     <!-- PAGE HEADER -->
     <div class="page-header">
       <div>
-        <h1>Stock Batch Monitoring</h1>
+        <h1>Stock Batch</h1>
         <p>
           Monitor new arrivals, upcoming expirations,
           expired products, and stock history.
@@ -25,7 +38,8 @@
         <!-- BACK TO INVENTORY -->
         <ion-button
           fill="outline"
-          routerLink="/inventory">
+          routerLink="/inventory"
+          (click)="blurActiveElement()">
 
           <ion-icon
             slot="start"
@@ -37,7 +51,8 @@
 
         <!-- STOCK IN -->
         <ion-button
-          routerLink="/inventory/stock-in">
+          routerLink="/inventory/stock-in"
+          (click)="blurActiveElement()">
 
           <ion-icon
             slot="start"
